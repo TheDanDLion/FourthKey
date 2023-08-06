@@ -55,11 +55,11 @@ public class Sacrifice extends AbstractImageEvent {
         cardSacrifice = sacrificeableCards.getRandomCard(true);
 
         this.imageEventText.setDialogOption(OPTIONS[0] + healthSacrifice + " HP.");
-        this.imageEventText.setDialogOption(OPTIONS[1]); // gold sacrifice
+        this.imageEventText.setDialogOption(OPTIONS[1] + GOLD_SACRIFICE + " gold.");
         this.imageEventText.setDialogOption(OPTIONS[2]); // potions sacrifice
-        this.imageEventText.setDialogOption(OPTIONS[3] + cardSacrifice.name);
-        this.imageEventText.setDialogOption(OPTIONS[4] + relicSacrifice.name);
-        this.imageEventText.setDialogOption(OPTIONS[5]); // leave
+        this.imageEventText.setDialogOption(OPTIONS[1] + cardSacrifice.name);
+        this.imageEventText.setDialogOption(OPTIONS[1] + relicSacrifice.name);
+        this.imageEventText.setDialogOption(OPTIONS[3]); // leave
 
         this.state = State.INTRO;
 
@@ -111,13 +111,13 @@ public class Sacrifice extends AbstractImageEvent {
                         break;
                 }
                 this.imageEventText.clearAllDialogs();
-                this.imageEventText.setDialogOption(OPTIONS[5]);
+                this.imageEventText.setDialogOption(OPTIONS[3]);
                 this.state = State.LEAVING;
                 AbstractDungeon.getCurrRoom().phase = RoomPhase.COMPLETE;
                 break;
             case LEAVING:
                 this.imageEventText.clearAllDialogs();
-                this.imageEventText.setDialogOption(OPTIONS[5]);
+                this.imageEventText.setDialogOption(OPTIONS[3]);
                 openMap();
                 break;
         }
