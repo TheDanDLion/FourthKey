@@ -1,8 +1,8 @@
 {
-  "modid": "Blank_Mod_ID_12345",
-  "name": "Blank Mod Name",
+  "modid": "fourthKey",
+  "name": "The Fourth Key",
   "author_list": ["dandylion1740"],
-  "description": "Dandy's blank mod template",
+  "description": "Adds a fourth key and a revamped final Act with increased difficulty.",
   "version": "0.1",
   "sts_version": "12-19-2022",
   "mts_version": "3.30.3"

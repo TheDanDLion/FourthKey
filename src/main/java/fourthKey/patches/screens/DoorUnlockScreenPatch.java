@@ -37,13 +37,13 @@ public class DoorUnlockScreenPatch {
         @SpireInsertPatch(
             loc = 69
         )
-        public static void Insert(DoorUnlockScreen __instance, boolean ___eventVersion) {
+        public static void Insert(DoorUnlockScreen __instance, boolean eventVersion) {
             LockPurple.set(
                 __instance,
                 new DoorLock(
                     DoorLockPatch.PURPLE,
                     CardCrawlGame.playerPref.getBoolean(AbstractPlayer.PlayerClass.WATCHER.name() + "_WIN", false),
-                    ___eventVersion
+                    eventVersion
                 )
             );
         }
