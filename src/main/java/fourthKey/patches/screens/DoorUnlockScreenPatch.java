@@ -1,20 +1,16 @@
 package fourthKey.patches.screens;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.evacipated.cardcrawl.modthespire.lib.SpireEnum;
-import com.evacipated.cardcrawl.modthespire.lib.SpireField;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch2;
-import com.megacrit.cardcrawl.characters.AbstractPlayer;
-import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.screens.DoorLock;
 import com.megacrit.cardcrawl.screens.DoorUnlockScreen;
 
-public class DoorUnlockScreenPatch {
+import fourthKey.patches.characters.AbstractPlayerPatch;
 
-    @SpireEnum
-    public static SpireField<DoorLock> LockPurple = new SpireField<>(() -> null);
+public class DoorUnlockScreenPatch {
 
     @SpirePatch2(
         clz = DoorUnlockScreen.class,
@@ -24,8 +20,8 @@ public class DoorUnlockScreenPatch {
         @SpireInsertPatch(
             loc = 62
         )
-        public static void Insert(DoorUnlockScreen __instance) {
-            LockPurple.get(__instance).reset();
+        public static void Insert() {
+            AbstractPlayerPatch.lockPurple.get(AbstractDungeon.player).reset();
         }
     }
 
@@ -35,17 +31,10 @@ public class DoorUnlockScreenPatch {
     )
     public static class CreateLockPurplePatch {
         @SpireInsertPatch(
-            loc = 69
+            loc = 67
         )
-        public static void Insert(DoorUnlockScreen __instance, boolean eventVersion) {
-            LockPurple.set(
-                __instance,
-                new DoorLock(
-                    DoorLockPatch.PURPLE,
-                    CardCrawlGame.playerPref.getBoolean(AbstractPlayer.PlayerClass.WATCHER.name() + "_WIN", false),
-                    eventVersion
-                )
-            );
+        public static void Insert(boolean eventVersion) {
+            AbstractPlayerPatch.lockPurple.set(AbstractDungeon.player, new DoorLock(DoorLockPatch.PURPLE, true, eventVersion));
         }
     }
 
@@ -57,8 +46,8 @@ public class DoorUnlockScreenPatch {
         @SpireInsertPatch(
             loc = 113
         )
-        public static void Insert(DoorUnlockScreen __instance) {
-            LockPurple.get(__instance).update();
+        public static void Insert() {
+            AbstractPlayerPatch.lockPurple.get(AbstractDungeon.player).update();
         }
     }
 
@@ -67,8 +56,8 @@ public class DoorUnlockScreenPatch {
         method = "exit"
     )
     public static class DisposeLockPurplePatch {
-        public static void Prefix(DoorUnlockScreen __instance) {
-            LockPurple.get(__instance).dispose();
+        public static void Prefix() {
+            AbstractPlayerPatch.lockPurple.get(AbstractDungeon.player).dispose();
         }
     }
 
@@ -80,9 +69,9 @@ public class DoorUnlockScreenPatch {
         @SpireInsertPatch(
             loc = 181
         )
-        public static void Insert(DoorUnlockScreen __instance, boolean ___eventVersion, float ___lightUpTimer) {
-            if (___lightUpTimer < (Settings.FAST_MODE ? 0.5F : 1.5F))
-                LockPurple.get(__instance).flash(___eventVersion);
+        public static void Insert(boolean ___eventVersion, float ___lightUpTimer) {
+            if (___lightUpTimer < (Settings.FAST_MODE ? 0.25F : 1.5F)) // TODO: broken on fast mode :(
+                AbstractPlayerPatch.lockPurple.get(AbstractDungeon.player).flash(___eventVersion);
         }
     }
 
@@ -91,9 +80,9 @@ public class DoorUnlockScreenPatch {
         method = "unlock"
     )
     public static class UnlockLockPurplePatch {
-        public static void Postfix(DoorUnlockScreen __instance, boolean ___animateCircle) {
+        public static void Postfix(boolean ___animateCircle) {
             if (___animateCircle)
-                LockPurple.get(__instance).unlock();
+                AbstractPlayerPatch.lockPurple.get(AbstractDungeon.player).unlock();
         }
     }
 
@@ -105,8 +94,8 @@ public class DoorUnlockScreenPatch {
         @SpireInsertPatch(
             loc = 285
         )
-        public static void Insert(DoorUnlockScreen __instance, SpriteBatch sb) {
-            LockPurple.get(__instance).render(sb);
+        public static void Insert(SpriteBatch sb) {
+            AbstractPlayerPatch.lockPurple.get(AbstractDungeon.player).render(sb);
         }
     }
 

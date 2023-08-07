@@ -3,6 +3,8 @@ package fourthKey;
 import basemod.BaseMod;
 import basemod.ModLabeledToggleButton;
 import basemod.ModPanel;
+import basemod.abstracts.CustomSavableRaw;
+import basemod.devcommands.ConsoleCommand;
 import basemod.eventUtil.AddEventParams;
 import basemod.eventUtil.EventUtils;
 import basemod.interfaces.EditStringsSubscriber;
@@ -13,8 +15,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.evacipated.cardcrawl.modthespire.lib.SpireConfig;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.megacrit.cardcrawl.core.Settings;
+import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.FontHelper;
+import com.megacrit.cardcrawl.helpers.Hitbox;
+import com.megacrit.cardcrawl.localization.EventStrings;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -22,7 +29,12 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fourthKey.console.*;
 import fourthKey.events.*;
+import fourthKey.patches.characters.AbstractPlayerPatch;
+import fourthKey.patches.shop.ShopScreenPatch;
+import fourthKey.patches.ui.panels.TopPanelPatch;
+import fourthKey.patches.vfx.ObtainKeyEffectPatch;
 import fourthKey.util.IDCheckDontTouchPls;
 import fourthKey.util.TextureLoader;
 
@@ -47,29 +59,9 @@ public class ModInitializer implements
     // =============== INPUT TEXTURE LOCATION =================
 
     //Mod Badge - A small icon that appears in the mod settings menu next to your mod.
-    public static final String BADGE_IMAGE = "the596Resources/images/Badge.png";
+    public static final String BADGE_IMAGE = "fourthKeyResources/images/Badge.png";
 
     // =============== MAKE IMAGE PATHS =================
-
-    public static String makeCardPath(String resourcePath) {
-        return getModID() + "Resources/images/cards/" + resourcePath;
-    }
-
-    public static String makeRelicPath(String resourcePath) {
-        return getModID() + "Resources/images/relics/" + resourcePath;
-    }
-
-    public static String makeRelicOutlinePath(String resourcePath) {
-        return getModID() + "Resources/images/relics/outline/" + resourcePath;
-    }
-
-    public static String makeOrbPath(String resourcePath) {
-        return getModID() + "Resources/images/orbs/" + resourcePath;
-    }
-
-    public static String makePowerPath(String resourcePath) {
-        return getModID() + "Resources/images/powers/" + resourcePath;
-    }
 
     public static String makeEventPath(String resourcePath) {
         return getModID() + "Resources/images/events/" + resourcePath;
@@ -85,7 +77,7 @@ public class ModInitializer implements
     // =============== SUBSCRIBE, INITIALIZE =================
 
     public ModInitializer(){
-        logger.info("Subscribe to fourthKey hooks");
+        logger.info("Subscribe to base mod hooks");
 
         BaseMod.subscribe(this);
 
@@ -149,11 +141,11 @@ public class ModInitializer implements
 
     //Used by @SpireInitializer
     public static void initialize(){
-        logger.info("========================= Initializing Blank Mod. =========================");
+        logger.info("========================= Initializing Fourth Key Mod. =========================");
         //This creates an instance of our classes and gets our code going after BaseMod and ModTheSpire initialize.
         new ModInitializer();
-        pathCheck();
-        logger.info("========================= /The 596 Mod Initialized./ =========================");
+        setModID("fourthKey");
+        logger.info("========================= /Fourth Key Mod Initialized./ =========================");
     }
 
     // ============== /SUBSCRIBE, INITIALIZE/ =================
@@ -201,9 +193,58 @@ public class ModInitializer implements
         BaseMod.addEvent(new AddEventParams.Builder(Sacrifice.ID, Sacrifice.class).eventType(EventUtils.EventType.NORMAL).create());
         // =============== /EVENTS/ =================
 
-        // =============== SCREENS =================
-        // logger.info("Adding screens");
-        // ============== /SCREENS/ ================
+        // =============== TEXTURES =================
+        logger.info("Adding textures");
+
+        ObtainKeyEffectPatch.amethystKey = TextureLoader.getTexture(makeUIPath("topPanel/purpleKey.png"));
+        ObtainKeyEffectPatch.sapphireKey = TextureLoader.getTexture(makeUIPath("topPanel/blueKey.png"));
+        ObtainKeyEffectPatch.rubyKey = TextureLoader.getTexture(makeUIPath("topPanel/redKey.png"));
+        ObtainKeyEffectPatch.emeraldKey = TextureLoader.getTexture(makeUIPath("topPanel/greenKey.png"));
+
+        ShopScreenPatch.amethystKey = TextureLoader.getTexture(makeUIPath("topPanel/purpleKey.png"));
+        ShopScreenPatch.keyY = (800.0F - ShopScreenPatch.amethystKey.getHeight()) * Settings.yScale;
+        ShopScreenPatch.keyHitbox = new Hitbox(ShopScreenPatch.keyX, ShopScreenPatch.keyY - ShopScreenPatch.amethystKey.getHeight() * Settings.scale, ShopScreenPatch.amethystKey.getWidth(), ShopScreenPatch.amethystKey.getHeight());
+
+        TopPanelPatch.rubyKey = TextureLoader.getTexture(makeUIPath("topPanel/redKey.png"));
+        TopPanelPatch.sapphireKey = TextureLoader.getTexture(makeUIPath("topPanel/blueKey.png"));
+        TopPanelPatch.emeraldKey = TextureLoader.getTexture(makeUIPath("topPanel/greenKey.png"));
+        TopPanelPatch.amethystKey = TextureLoader.getTexture(makeUIPath("topPanel/purpleKey.png"));
+        TopPanelPatch.keySlots = TextureLoader.getTexture(makeUIPath("topPanel/keySlots.png"));
+        // =============== /TEXTURES/ =================
+
+        // =============== COMMANDS =================
+        logger.info("Adding commands");
+        ConsoleCommand.addCommand("purpleKey", PurpleKey.class);
+        // =============== /COMMANDS/ =================
+
+        // =============== SAVE FIELDS =================
+        logger.info("Adding save fields");
+        BaseMod.addSaveField("purpleKey", new CustomSavableRaw() {
+
+            @Override
+            public void onLoadRaw(JsonElement json) {
+                if (AbstractDungeon.player != null) {
+                    logger.info(json);
+                    if (json == null) {
+                        AbstractPlayerPatch.hasAmethystKey.set(AbstractDungeon.player, false);
+                    } else {
+                        JsonElement key = json.getAsJsonObject().get("purpleKey");
+                        AbstractPlayerPatch.hasAmethystKey.set(AbstractDungeon.player, key == null ? false : key.getAsBoolean());
+                    }
+                }
+            }
+
+            @Override
+            public JsonElement onSaveRaw() {
+                JsonParser parser = new JsonParser();
+                return parser.parse(
+                    "{\"purpleKey\":\""
+                    + (AbstractDungeon.player != null ? AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player) : false)
+                    + "\"}"
+                );
+            }
+        });
+        // =============== /SAVE FIELDS/ =================
 
     }
 
@@ -216,21 +257,15 @@ public class ModInitializer implements
     public void receiveEditStrings() {
         logger.info("Beginning to edit strings for mod with ID: " + getModID());
 
-        // PowerStrings
-        // BaseMod.loadCustomStringsFile(PowerStrings.class,
-        //     getModID() + "Resources/localization/eng/the596-Power-Strings.json");
+        pathCheck();
 
-        // Event Strings
-        // BaseMod.loadCustomStringsFile(EventStrings.class,
-        //     getModID() + "Resources/localization/eng/the596-Event-Strings.json");
-
-        // UIStrings
-        // BaseMod.loadCustomStringsFile(UIStrings.class,
-        //     getModID() + "Resources/localization/eng/the596-UI-Strings.json");
+        BaseMod.loadCustomStringsFile(EventStrings.class,
+            getModID() + "Resources/localization/eng/fourthKey-Event-Strings.json");
 
         logger.info("Done editing strings");
     }
 
+    // ================ /LOAD THE TEXT/ ===================
 
     // this adds "ModName:" before the ID of any card/relic/power etc.
     // in order to avoid conflicts if any other mod uses the same ID.

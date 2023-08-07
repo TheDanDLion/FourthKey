@@ -13,17 +13,9 @@ import com.megacrit.cardcrawl.helpers.ImageMaster;
 import com.megacrit.cardcrawl.screens.DoorLock;
 import com.megacrit.cardcrawl.screens.DoorLock.LockColor;
 
+import static fourthKey.ModInitializer.makeUIPath;
+
 public class DoorLockPatch {
-
-    private final static Texture AMETHYST_LOCK = ImageMaster.loadImage("fourthKeyResources/images/ui/purpleLock.png");
-    private final static Texture EMERALD_LOCK = ImageMaster.loadImage("fourthKeyResources/images/ui/greenLock.png");
-    private final static Texture RUBY_LOCK = ImageMaster.loadImage("fourthKeyResources/images/ui/redLock.png");
-    private final static Texture SAPPHIRE_LOCK = ImageMaster.loadImage("fourthKeyResources/images/ui/blueLock.png");
-
-    private final static Texture AMETHYST_GLOW = ImageMaster.loadImage("fourthKeyResources/images/ui/purpleLockGlow.png");
-    private final static Texture EMERALD_GLOW = ImageMaster.loadImage("fourthKeyResources/images/ui/greenLockGlow.png");
-    private final static Texture RUBY_GLOW = ImageMaster.loadImage("fourthKeyResources/images/ui/redLockGlow.png");
-    private final static Texture SAPPHIRE_GLOW = ImageMaster.loadImage("fourthKeyResources/images/ui/blueLockGlow.png");
 
     @SpireEnum
     public static DoorLock.LockColor PURPLE;
@@ -33,25 +25,27 @@ public class DoorLockPatch {
         method = SpirePatch.CONSTRUCTOR
     )
     public static class DoorLockConstructorPatch {
-        public static void Postfix(LockColor c, Texture ___lockImg, Texture ___glowImg, @ByRef float[] ___targetY, boolean eventVersion) {
+        public static void Postfix(LockColor c, @ByRef Texture[] ___lockImg, @ByRef Texture[] ___glowImg, @ByRef float[] ___targetY, @ByRef boolean[] ___glowing, boolean eventVersion) {
             switch (c) {
                 case BLUE:
-                    ___lockImg = SAPPHIRE_LOCK;
-                    ___glowImg = SAPPHIRE_GLOW;
+                    ___lockImg[0] = ImageMaster.loadImage(makeUIPath("blueLock.png"));
+                    ___glowImg[0] = ImageMaster.loadImage(makeUIPath("blueLockGlow.png"));
+                    ___targetY[0] = (eventVersion ? 752.0F : 800.0F) * Settings.scale;
                     break;
                 case GREEN:
-                    ___lockImg = EMERALD_LOCK;
-                    ___glowImg = EMERALD_GLOW;
+                    ___lockImg[0] = ImageMaster.loadImage(makeUIPath("greenLock.png"));
+                    ___glowImg[0] = ImageMaster.loadImage(makeUIPath("greenLockGlow.png"));
                     break;
                 case RED:
-                    ___lockImg = RUBY_LOCK;
-                    ___glowImg = RUBY_GLOW;
+                    ___lockImg[0] = ImageMaster.loadImage(makeUIPath("redLock.png"));
+                    ___glowImg[0] = ImageMaster.loadImage(makeUIPath("redLockGlow.png"));
                     break;
             }
             if (c == PURPLE) {
-                ___lockImg = AMETHYST_LOCK;
-                ___glowImg = AMETHYST_GLOW;
-                ___targetY[0] = (eventVersion ? 752.0F : 800.0F) * Settings.scale;
+                ___lockImg[0] = ImageMaster.loadImage(makeUIPath("purpleLock.png"));
+                ___glowImg[0] = ImageMaster.loadImage(makeUIPath("purpleLockGlow.png"));
+                ___glowing[0] = true;
+                ___targetY[0] = (eventVersion ? -748.0F : -700.0F) * Settings.scale;
             }
         }
     }
@@ -64,8 +58,8 @@ public class DoorLockPatch {
         @SpireInsertPatch(
             loc = 87
         )
-        public static SpireReturn<Void> Insert(LockColor c, float ___unlockTimer, float ___startY, float ___targetY, @ByRef float[] ___x, @ByRef float[] ___y) {
-            switch (c) {
+        public static SpireReturn<Void> Insert(LockColor ___c, float ___unlockTimer, float ___startY, float ___targetY, @ByRef float[] ___x, @ByRef float[] ___y) {
+            switch (___c) {
                 case BLUE:
                     ___x[0] = Interpolation.pow5In.apply(1000.0F * Settings.scale, 0.0F, ___unlockTimer / 2.0F);
                     ___y[0] = Interpolation.pow5In.apply(___targetY, ___startY, ___unlockTimer / 2.0F);
@@ -79,7 +73,7 @@ public class DoorLockPatch {
                     ___y[0] = Interpolation.pow5In.apply(___targetY, ___startY, ___unlockTimer / 2.0F);
                     break;
             }
-            if (c == PURPLE) {
+            if (___c == PURPLE) {
                 ___x[0] = Interpolation.pow5In.apply(1000.0F * Settings.scale, 0.0F, ___unlockTimer / 2.0F);
                 ___y[0] = Interpolation.pow5In.apply(___targetY, ___startY, ___unlockTimer / 2.0F);
             }

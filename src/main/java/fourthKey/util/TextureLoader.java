@@ -29,7 +29,7 @@ public class TextureLoader {
                 loadTexture(textureString);
             } catch (GdxRuntimeException e) {
                 logger.error("Could not find texture: " + textureString);
-                return getTexture("the596Resources/images/ui/missing_texture.png");
+                return getTexture("fourthKeyResources/images/ui/missing_texture.png");
             }
         }
         return textures.get(textureString);
@@ -43,7 +43,7 @@ public class TextureLoader {
      * @throws GdxRuntimeException
      */
     private static void loadTexture(final String textureString) throws GdxRuntimeException {
-        logger.info("DefaultMod | Loading Texture: " + textureString);
+        logger.info("FourthKey Mod | Loading Texture: " + textureString);
         Texture texture = new Texture(textureString);
         texture.setFilter(TextureFilter.Linear, TextureFilter.Linear);
         textures.put(textureString, texture);

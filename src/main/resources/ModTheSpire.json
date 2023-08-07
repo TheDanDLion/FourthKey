@@ -1,8 +1,8 @@
 {
   "modid": "fourthKey",
-  "name": "The Fourth Key",
+  "name": "Fourth Key",
   "author_list": ["dandylion1740"],
-  "description": "Adds a fourth key and a revamped final Act with increased difficulty.",
+  "description": "Adds a fourth key and a revamped final act with increased difficulty.",
   "version": "0.1",
   "sts_version": "12-19-2022",
   "mts_version": "3.30.3"

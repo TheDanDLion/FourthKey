@@ -8,6 +8,7 @@ import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.events.AbstractImageEvent;
 import com.megacrit.cardcrawl.localization.EventStrings;
+import com.megacrit.cardcrawl.potions.AbstractPotion;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
 import com.megacrit.cardcrawl.rooms.AbstractRoom.RoomPhase;
 import com.megacrit.cardcrawl.vfx.ObtainKeyEffect;
@@ -34,16 +35,17 @@ public class Sacrifice extends AbstractImageEvent {
 
     private State state;
 
-    private enum State {
+    public enum State {
         INTRO,
         LEAVING
     }
 
-    public Sacrifice(String title, String body, String imgUrl) {
+    public Sacrifice() {
         super(NAME, DESCRIPTIONS[0], makeEventPath("Sacrifice.png"));
 
         this.healthSacrifice = (int)(AbstractDungeon.player.maxHealth * 0.25);
-        this.relicSacrifice = AbstractDungeon.player.relics.get(AbstractDungeon.cardRandomRng.random(AbstractDungeon.player.relics.size() - 1));
+        if (!AbstractDungeon.player.relics.isEmpty())
+            this.relicSacrifice = AbstractDungeon.player.relics.get(AbstractDungeon.cardRandomRng.random(AbstractDungeon.player.relics.size() - 1));
 
         CardGroup sacrificeableCards = new CardGroup(CardGroup.CardGroupType.UNSPECIFIED);
         sacrificeableCards.clear();
@@ -52,13 +54,26 @@ public class Sacrifice extends AbstractImageEvent {
                 sacrificeableCards.addToTop(card);
             }
         }
-        cardSacrifice = sacrificeableCards.getRandomCard(true);
+        if (!sacrificeableCards.isEmpty())
+            cardSacrifice = sacrificeableCards.getRandomCard(true);
 
-        this.imageEventText.setDialogOption(OPTIONS[0] + healthSacrifice + " HP.");
-        this.imageEventText.setDialogOption(OPTIONS[1] + GOLD_SACRIFICE + " gold.");
-        this.imageEventText.setDialogOption(OPTIONS[2]); // potions sacrifice
-        this.imageEventText.setDialogOption(OPTIONS[1] + cardSacrifice.name);
-        this.imageEventText.setDialogOption(OPTIONS[1] + relicSacrifice.name);
+        this.imageEventText.setDialogOption(OPTIONS[0] + healthSacrifice + OPTIONS[4]);
+        if (AbstractDungeon.player.gold >= GOLD_SACRIFICE)
+            this.imageEventText.setDialogOption(OPTIONS[1] + GOLD_SACRIFICE + OPTIONS[5]);
+        else
+            this.imageEventText.setDialogOption(OPTIONS[6] + GOLD_SACRIFICE + OPTIONS[5], true);
+        if (AbstractDungeon.player.hasAnyPotions())
+            this.imageEventText.setDialogOption(OPTIONS[2]);
+        else
+            this.imageEventText.setDialogOption(OPTIONS[6] + OPTIONS[7], true);
+        if (cardSacrifice != null)
+            this.imageEventText.setDialogOption(OPTIONS[1] + cardSacrifice.name);
+        else
+            this.imageEventText.setDialogOption(OPTIONS[6] + OPTIONS[8], true);
+        if (relicSacrifice != null)
+            this.imageEventText.setDialogOption(OPTIONS[1] + relicSacrifice.name);
+        else
+            this.imageEventText.setDialogOption(OPTIONS[6] + OPTIONS[9], true);
         this.imageEventText.setDialogOption(OPTIONS[3]); // leave
 
         this.state = State.INTRO;
@@ -89,7 +104,8 @@ public class Sacrifice extends AbstractImageEvent {
                         break;
                     case 2:
                         CardCrawlGame.sound.play("POTION_1");
-                        AbstractDungeon.player.potions.clear();
+                        for (AbstractPotion potion : AbstractDungeon.player.potions)
+                            AbstractDungeon.player.removePotion(potion);
                         this.imageEventText.updateBodyText(DESCRIPTIONS[3]);
                         gainPurpleKey();
                         break;

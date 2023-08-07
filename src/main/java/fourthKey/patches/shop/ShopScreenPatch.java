@@ -10,6 +10,10 @@ import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.Hitbox;
+import com.megacrit.cardcrawl.helpers.ImageMaster;
+import com.megacrit.cardcrawl.helpers.controller.CInputActionSet;
+import com.megacrit.cardcrawl.helpers.input.InputHelper;
+import com.megacrit.cardcrawl.shop.ShopScreen;
 import com.megacrit.cardcrawl.vfx.ObtainKeyEffect;
 
 import fourthKey.patches.characters.AbstractPlayerPatch;
@@ -17,16 +21,50 @@ import fourthKey.patches.vfx.ObtainKeyEffectPatch;
 
 public class ShopScreenPatch {
 
-    private static final Texture AMETHYST_KEY = new Texture("fourthKeyResources/images/ui/purpleKey.png");
-    private static final Hitbox KEY_HITBOX = new Hitbox(AMETHYST_KEY.getWidth(), AMETHYST_KEY.getHeight());
+    public static Texture amethystKey;
+    public static Hitbox keyHitbox;
     private static final int KEY_COST = 99;
-    private static final float KEY_X = 50.0F * Settings.scale;
-    private static final float KEY_Y = Settings.scale / 2.0F;
-    private static final float KEY_PRICE_X_OFFSET = -56.0F * Settings.scale;
-    private static final float KEY_PRICE_Y_OFFSET = -100.0F * Settings.scale;
+    public static float keyX = 0.12F * Settings.WIDTH;
+    public static float keyY;
+    private static final float KEY_GOLD_X_OFFSET = -56.0F * Settings.scale;
+    private static final float KEY_GOLD_Y_OFFSET = -100.0F * Settings.scale;
+    private static final float KEY_PRICE_X_OFFSET = 14.0F * Settings.scale;
+    private static final float KEY_PRICE_Y_OFFSET = -62.0F * Settings.scale;
+    private static final float GOLD_IMG_WIDTH = ImageMaster.UI_GOLD.getWidth() * Settings.scale;
+
+    private static void purchasePurpleKey() {
+        AbstractDungeon.player.loseGold(KEY_COST);
+        CardCrawlGame.sound.play("SHOP_PURCHASE", 0.1F);
+        AbstractPlayerPatch.hasAmethystKey.set(AbstractDungeon.player, true);
+        AbstractDungeon.effectsQueue.add(new ObtainKeyEffect(ObtainKeyEffectPatch.PURPLE));
+    }
+
+    private static void updatePurpleKey(ShopScreen __instance) {
+        keyHitbox.update();
+        if (keyHitbox.hovered) {
+            __instance.moveHand(keyX, keyY);
+            if ((InputHelper.justReleasedClickLeft || CInputActionSet.select.isJustPressed())
+                && AbstractDungeon.player.gold >= KEY_COST && !AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player)) {
+                if (!Settings.isTouchScreen) {
+                    CInputActionSet.select.unpress();
+                    purchasePurpleKey();
+                } else {
+                    if (AbstractDungeon.player.gold < KEY_COST) {
+                        __instance.playCantBuySfx();
+                        __instance.createSpeech(ShopScreen.getCantBuyMsg());
+                    } else { // TODO: will need to make work for confirm button
+                        __instance.confirmButton.hideInstantly();
+                        __instance.confirmButton.show();
+                        __instance.confirmButton.hb.clickStarted = false;
+                        __instance.confirmButton.isDisabled = false;
+                    }
+                }
+            }
+        }
+    }
 
     @SpirePatch2(
-        clz = ShopScreenPatch.class,
+        clz = ShopScreen.class,
         method = "render"
     )
     public static class RenderShopPurpleKeyPatch {
@@ -35,8 +73,9 @@ public class ShopScreenPatch {
         )
         public static void Insert(SpriteBatch sb) {
             if (!AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player)) {
+                sb.draw(amethystKey, keyX, keyY, 64.0F, 64.0F, 128.0F, 128.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 128, 128, false, false);
                 sb.setColor(Color.WHITE);
-                sb.draw(AMETHYST_KEY, KEY_X, KEY_Y);
+                sb.draw(ImageMaster.UI_GOLD, keyX + KEY_GOLD_X_OFFSET, keyY + KEY_GOLD_Y_OFFSET, GOLD_IMG_WIDTH, GOLD_IMG_WIDTH);
                 Color color = Color.WHITE.cpy();
                 if (KEY_COST > AbstractDungeon.player.gold)
                     color = Color.SALMON.cpy();
@@ -44,16 +83,17 @@ public class ShopScreenPatch {
                     sb,
                     FontHelper.tipHeaderFont,
                     Integer.toString(KEY_COST),
-                    KEY_X + KEY_PRICE_X_OFFSET,
-                    KEY_Y + KEY_PRICE_Y_OFFSET,
+                    keyX + KEY_PRICE_X_OFFSET,
+                    keyY + KEY_PRICE_Y_OFFSET,
                     color
                 );
+                keyHitbox.render(sb);
             }
         }
     }
 
     @SpirePatch2(
-        clz = ShopScreenPatch.class,
+        clz = ShopScreen.class,
         method = "update"
     )
     public static class PurchasePurpleKeyPatch {
@@ -61,13 +101,21 @@ public class ShopScreenPatch {
             loc = 605
         )
         public static void Insert() {
-            KEY_HITBOX.update();
-            if (KEY_HITBOX.hovered) {
-                AbstractDungeon.player.loseGold(KEY_COST);
-                CardCrawlGame.sound.play("SHOP_PURCHASE", 0.1F);
-                AbstractPlayerPatch.hasAmethystKey.set(AbstractDungeon.player, true);
-                AbstractDungeon.effectsQueue.add(new ObtainKeyEffect(ObtainKeyEffectPatch.PURPLE));
-            }
+            if (keyHitbox.hovered && AbstractDungeon.player.gold >= KEY_COST && !AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player))
+                purchasePurpleKey();
+        }
+    }
+
+    @SpirePatch2(
+        clz = ShopScreen.class,
+        method = "update"
+    )
+    public static class UpdatePurpleKeyPatch {
+        @SpireInsertPatch(
+            loc = 621
+        )
+        public static void Insert(ShopScreen __instance) {
+            updatePurpleKey(__instance);
         }
     }
 }

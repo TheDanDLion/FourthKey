@@ -20,7 +20,7 @@ public class CorruptHeartPatch {
 
     private static final int NEW_HP_LIMIT = 900;
     private static final int STR_GAIN = 1;
-    private static final float HP_MOD = 1.11f;
+    private static final float HP_MOD = 0.11f;
     private static final int METALLICIZE = 25;
     private static final int REGEN = 25;
 
