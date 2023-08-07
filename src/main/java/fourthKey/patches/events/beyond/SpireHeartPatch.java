@@ -22,7 +22,7 @@ public class SpireHeartPatch {
             loc = 184
         )
         public static void Insert() {
-            if (!ModInitializer.disableAmethystKey && !AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player)) {
+            if (ModInitializer.disableAmethystKey && !AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player) && Settings.hasRubyKey) {
                 // setting one of the keys to false to force going down the other route
                 Settings.hasRubyKey = false;
                 resetKey = true;

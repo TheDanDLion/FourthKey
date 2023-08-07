@@ -25,12 +25,12 @@ public class ShopScreenPatch {
     public static Texture amethystKey;
     public static Hitbox keyHitbox;
     private static final int KEY_COST = 99;
-    public static float keyX = 0.12F * Settings.WIDTH;
-    public static float keyY;
-    private static final float KEY_GOLD_X_OFFSET = -56.0F * Settings.scale;
-    private static final float KEY_GOLD_Y_OFFSET = -100.0F * Settings.scale;
-    private static final float KEY_PRICE_X_OFFSET = 14.0F * Settings.scale;
-    private static final float KEY_PRICE_Y_OFFSET = -62.0F * Settings.scale;
+    public static float keyX = 0.43F * Settings.WIDTH;
+    public static float keyY = 190.0F;
+    private static final float KEY_GOLD_X_OFFSET = -28.0F * Settings.scale;
+    private static final float KEY_GOLD_Y_OFFSET = -33.0F * Settings.scale;
+    private static final float KEY_PRICE_X_OFFSET = 42.0F * Settings.scale;
+    private static final float KEY_PRICE_Y_OFFSET = 5.0F * Settings.scale;
     private static final float GOLD_IMG_WIDTH = ImageMaster.UI_GOLD.getWidth() * Settings.scale;
 
     private static void purchasePurpleKey() {
@@ -44,7 +44,8 @@ public class ShopScreenPatch {
         if (!ModInitializer.disableAmethystKey) {
             keyHitbox.update();
             if (keyHitbox.hovered) {
-                __instance.moveHand(keyX, keyY);
+                if (!AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player))
+                    __instance.moveHand(keyX - 150.0F, keyY);
                 if ((InputHelper.justReleasedClickLeft || CInputActionSet.select.isJustPressed())
                     && AbstractDungeon.player.gold >= KEY_COST && !AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player)) {
                     if (!Settings.isTouchScreen) {

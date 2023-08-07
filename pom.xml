@@ -85,7 +85,7 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <copy file="target/FourthKey.jar" tofile="../_ModTheSpire/mods/FourthKey.jar"/>
+                                <copy file="target/FourthKey.jar" tofile="../_ModTheSpire/FourthKey/content/FourthKey.jar"/>
                             </target>
                         </configuration>
                         <goals>

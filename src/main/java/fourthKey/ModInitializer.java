@@ -233,8 +233,7 @@ public class ModInitializer implements
         ObtainKeyEffectPatch.emeraldKey = TextureLoader.getTexture(makeUIPath("topPanel/greenKey.png"));
 
         ShopScreenPatch.amethystKey = TextureLoader.getTexture(makeUIPath("amethystKey.png"));
-        ShopScreenPatch.keyY = (800.0F - ShopScreenPatch.amethystKey.getHeight()) * Settings.yScale;
-        ShopScreenPatch.keyHitbox = new Hitbox(ShopScreenPatch.keyX, ShopScreenPatch.keyY - ShopScreenPatch.amethystKey.getHeight() * Settings.scale, ShopScreenPatch.amethystKey.getWidth(), ShopScreenPatch.amethystKey.getHeight());
+        ShopScreenPatch.keyHitbox = new Hitbox(ShopScreenPatch.keyX, ShopScreenPatch.keyY, ShopScreenPatch.amethystKey.getWidth(), ShopScreenPatch.amethystKey.getHeight());
 
         TopPanelPatch.rubyKey = TextureLoader.getTexture(makeUIPath("topPanel/redKey.png"));
         TopPanelPatch.sapphireKey = TextureLoader.getTexture(makeUIPath("topPanel/blueKey.png"));
