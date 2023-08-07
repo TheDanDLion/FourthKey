@@ -16,6 +16,7 @@ import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.shop.ShopScreen;
 import com.megacrit.cardcrawl.vfx.ObtainKeyEffect;
 
+import fourthKey.ModInitializer;
 import fourthKey.patches.characters.AbstractPlayerPatch;
 import fourthKey.patches.vfx.ObtainKeyEffectPatch;
 
@@ -40,23 +41,25 @@ public class ShopScreenPatch {
     }
 
     private static void updatePurpleKey(ShopScreen __instance) {
-        keyHitbox.update();
-        if (keyHitbox.hovered) {
-            __instance.moveHand(keyX, keyY);
-            if ((InputHelper.justReleasedClickLeft || CInputActionSet.select.isJustPressed())
-                && AbstractDungeon.player.gold >= KEY_COST && !AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player)) {
-                if (!Settings.isTouchScreen) {
-                    CInputActionSet.select.unpress();
-                    purchasePurpleKey();
-                } else {
-                    if (AbstractDungeon.player.gold < KEY_COST) {
-                        __instance.playCantBuySfx();
-                        __instance.createSpeech(ShopScreen.getCantBuyMsg());
-                    } else { // TODO: will need to make work for confirm button
-                        __instance.confirmButton.hideInstantly();
-                        __instance.confirmButton.show();
-                        __instance.confirmButton.hb.clickStarted = false;
-                        __instance.confirmButton.isDisabled = false;
+        if (!ModInitializer.disableAmethystKey) {
+            keyHitbox.update();
+            if (keyHitbox.hovered) {
+                __instance.moveHand(keyX, keyY);
+                if ((InputHelper.justReleasedClickLeft || CInputActionSet.select.isJustPressed())
+                    && AbstractDungeon.player.gold >= KEY_COST && !AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player)) {
+                    if (!Settings.isTouchScreen) {
+                        CInputActionSet.select.unpress();
+                        purchasePurpleKey();
+                    } else {
+                        if (AbstractDungeon.player.gold < KEY_COST) {
+                            __instance.playCantBuySfx();
+                            __instance.createSpeech(ShopScreen.getCantBuyMsg());
+                        } else { // TODO: will need to make work for confirm button
+                            __instance.confirmButton.hideInstantly();
+                            __instance.confirmButton.show();
+                            __instance.confirmButton.hb.clickStarted = false;
+                            __instance.confirmButton.isDisabled = false;
+                        }
                     }
                 }
             }
@@ -72,7 +75,7 @@ public class ShopScreenPatch {
             loc = 1394
         )
         public static void Insert(SpriteBatch sb) {
-            if (!AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player)) {
+            if (!ModInitializer.disableAmethystKey && !AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player)) {
                 sb.draw(amethystKey, keyX, keyY, 64.0F, 64.0F, 128.0F, 128.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 128, 128, false, false);
                 sb.setColor(Color.WHITE);
                 sb.draw(ImageMaster.UI_GOLD, keyX + KEY_GOLD_X_OFFSET, keyY + KEY_GOLD_Y_OFFSET, GOLD_IMG_WIDTH, GOLD_IMG_WIDTH);
@@ -101,7 +104,7 @@ public class ShopScreenPatch {
             loc = 605
         )
         public static void Insert() {
-            if (keyHitbox.hovered && AbstractDungeon.player.gold >= KEY_COST && !AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player))
+            if (!ModInitializer.disableAmethystKey && keyHitbox.hovered && AbstractDungeon.player.gold >= KEY_COST && !AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player))
                 purchasePurpleKey();
         }
     }

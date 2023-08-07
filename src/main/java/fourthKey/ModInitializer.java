@@ -7,6 +7,7 @@ import basemod.abstracts.CustomSavableRaw;
 import basemod.devcommands.ConsoleCommand;
 import basemod.eventUtil.AddEventParams;
 import basemod.eventUtil.EventUtils;
+import basemod.eventUtil.util.Condition;
 import basemod.interfaces.EditStringsSubscriber;
 import basemod.interfaces.PostInitializeSubscriber;
 import com.badlogic.gdx.Gdx;
@@ -48,8 +49,10 @@ public class ModInitializer implements
 
     // Mod-settings settings. This is if you want an on/off savable button
     public static Properties fourthKeyProperties = new Properties();
-    public static final String ENABLE_PLACEHOLDER_SETTINGS = "enablePlaceholder";
-    public static boolean enablePlaceholder = true; // The boolean we'll be setting on/off (true/false)
+    public static final String DISABLE_ACT_4_DIFFICULTY = "disableAct4Difficulty";
+    public static boolean disableAct4Difficulty = false;
+    public static final String DISABLE_AMETHYST_KEY = "disableAmethystKey";
+    public static boolean disableAmethystKey = false;
 
     //This is for the in-game mod settings panel.
     private static final String MODNAME = "Fourth Key";
@@ -84,12 +87,13 @@ public class ModInitializer implements
         logger.info("Done subscribing");
 
         logger.info("Adding mod settings");
-        fourthKeyProperties.setProperty(ENABLE_PLACEHOLDER_SETTINGS, "FALSE"); // This is the default setting. It's actually set...
+        fourthKeyProperties.setProperty(DISABLE_ACT_4_DIFFICULTY, "FALSE");
+        fourthKeyProperties.setProperty(DISABLE_AMETHYST_KEY, "FALSE");
         try {
-            SpireConfig config = new SpireConfig("fourthKey", "fourthKeyConfig", fourthKeyProperties); // ...right here
-            // the "fileName" parameter is the name of the file MTS will create where it will save our setting.
-            config.load(); // Load the setting and set the boolean to equal it
-            enablePlaceholder = config.getBool(ENABLE_PLACEHOLDER_SETTINGS);
+            SpireConfig config = new SpireConfig("fourthKey", "fourthKeyConfig", fourthKeyProperties);
+            config.load();
+            disableAct4Difficulty = config.getBool(DISABLE_ACT_4_DIFFICULTY);
+            disableAmethystKey = config.getBool(DISABLE_AMETHYST_KEY);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -164,25 +168,42 @@ public class ModInitializer implements
         ModPanel settingsPanel = new ModPanel();
 
         // Create the on/off button:
-        ModLabeledToggleButton enableNormalsButton = new ModLabeledToggleButton("This is the text which goes next to the checkbox.",
-                350.0f, 700.0f, Settings.CREAM_COLOR, FontHelper.charDescFont, // Position (trial and error it), color, font
-                enablePlaceholder, // Boolean it uses
-                settingsPanel, // The mod panel in which this button will be in
-                (label) -> {}, // thing??????? idk
-                (button) -> { // The actual button:
+        ModLabeledToggleButton disableAct4DifficultyButton = new ModLabeledToggleButton("Disable Act 4 difficulty increases",
+                350.0f, 700.0f, Settings.CREAM_COLOR, FontHelper.charDescFont,
+                disableAct4Difficulty,
+                settingsPanel,
+                (label) -> {},
+                (button) -> {
 
-            enablePlaceholder = button.enabled; // The boolean true/false will be whether the button is enabled or not
+            disableAct4Difficulty = button.enabled;
             try {
-                // And based on that boolean, set the settings and save them
                 SpireConfig config = new SpireConfig("fourthKey", "fourthKeyConfig", fourthKeyProperties);
-                config.setBool(ENABLE_PLACEHOLDER_SETTINGS, enablePlaceholder);
+                config.setBool(DISABLE_ACT_4_DIFFICULTY, disableAct4Difficulty);
                 config.save();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
 
-        settingsPanel.addUIElement(enableNormalsButton); // Add the button to the settings panel. Button is a go.
+        ModLabeledToggleButton disableAmethystKeyButton = new ModLabeledToggleButton("Disable Amethyst Key",
+                350.0f, 650.0f, Settings.CREAM_COLOR, FontHelper.charDescFont,
+                disableAmethystKey,
+                settingsPanel,
+                (label) -> {},
+                (button) -> {
+
+            disableAmethystKey = button.enabled;
+            try {
+                SpireConfig config = new SpireConfig("fourthKey", "fourthKeyConfig", fourthKeyProperties);
+                config.setBool(DISABLE_AMETHYST_KEY, disableAmethystKey);
+                config.save();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        settingsPanel.addUIElement(disableAct4DifficultyButton);
+        settingsPanel.addUIElement(disableAmethystKeyButton);
 
         BaseMod.registerModBadge(badgeTexture, MODNAME, AUTHOR, DESCRIPTION, settingsPanel);
 
@@ -190,7 +211,17 @@ public class ModInitializer implements
 
         // =============== EVENTS =================
         logger.info("Adding events");
-        BaseMod.addEvent(new AddEventParams.Builder(Sacrifice.ID, Sacrifice.class).eventType(EventUtils.EventType.NORMAL).create());
+        BaseMod.addEvent(new AddEventParams.Builder(Sacrifice.ID, Sacrifice.class)
+            .eventType(EventUtils.EventType.NORMAL)
+            .bonusCondition(new Condition() {
+                @Override
+                public boolean test() {
+                    return !disableAmethystKey
+                        && AbstractDungeon.player != null
+                        && !AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player);
+                }
+            })
+            .create());
         // =============== /EVENTS/ =================
 
         // =============== TEXTURES =================
@@ -201,7 +232,7 @@ public class ModInitializer implements
         ObtainKeyEffectPatch.rubyKey = TextureLoader.getTexture(makeUIPath("topPanel/redKey.png"));
         ObtainKeyEffectPatch.emeraldKey = TextureLoader.getTexture(makeUIPath("topPanel/greenKey.png"));
 
-        ShopScreenPatch.amethystKey = TextureLoader.getTexture(makeUIPath("topPanel/purpleKey.png"));
+        ShopScreenPatch.amethystKey = TextureLoader.getTexture(makeUIPath("amethystKey.png"));
         ShopScreenPatch.keyY = (800.0F - ShopScreenPatch.amethystKey.getHeight()) * Settings.yScale;
         ShopScreenPatch.keyHitbox = new Hitbox(ShopScreenPatch.keyX, ShopScreenPatch.keyY - ShopScreenPatch.amethystKey.getHeight() * Settings.scale, ShopScreenPatch.amethystKey.getWidth(), ShopScreenPatch.amethystKey.getHeight());
 

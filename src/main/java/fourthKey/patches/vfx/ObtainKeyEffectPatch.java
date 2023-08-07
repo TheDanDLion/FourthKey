@@ -12,6 +12,7 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.vfx.ObtainKeyEffect;
 import com.megacrit.cardcrawl.vfx.ObtainKeyEffect.KeyColor;
 
+import fourthKey.ModInitializer;
 import fourthKey.patches.characters.AbstractPlayerPatch;
 
 public class ObtainKeyEffectPatch {
@@ -30,20 +31,22 @@ public class ObtainKeyEffectPatch {
     )
     public static class ObtainPurpleKeyEffectPatch {
         public static void Postfix(@ByRef Texture[] ___img, KeyColor keyColor) {
-            switch (keyColor) {
-                case GREEN:
-                    ___img[0] = emeraldKey;
-                    break;
-                case RED:
-                    ___img[0] = rubyKey;
-                    break;
-                case BLUE:
-                    ___img[0] = sapphireKey;
-                    break;
-            }
-            if (keyColor == PURPLE) {
-                ___img[0] = amethystKey;
-                AbstractPlayerPatch.hasAmethystKey.set(AbstractDungeon.player, true);
+            if (!ModInitializer.disableAmethystKey) {
+                switch (keyColor) {
+                    case GREEN:
+                        ___img[0] = emeraldKey;
+                        break;
+                    case RED:
+                        ___img[0] = rubyKey;
+                        break;
+                    case BLUE:
+                        ___img[0] = sapphireKey;
+                        break;
+                }
+                if (keyColor == PURPLE) {
+                    ___img[0] = amethystKey;
+                    AbstractPlayerPatch.hasAmethystKey.set(AbstractDungeon.player, true);
+                }
             }
         }
     }
@@ -58,25 +61,28 @@ public class ObtainKeyEffectPatch {
             loc = 56
         )
         public static SpireReturn<Void> Insert(@ByRef Texture[] ___img, KeyColor ___keyColor) {
-            switch (___keyColor) {
-                case GREEN:
-                    ___img[0] = emeraldKey;
-                    Settings.hasEmeraldKey = true;
-                    break;
-                case RED:
-                    ___img[0] = rubyKey;
-                    Settings.hasRubyKey = true;
-                    break;
-                case BLUE:
-                    ___img[0] = sapphireKey;
-                    Settings.hasSapphireKey = true;
-                    break;
+            if (!ModInitializer.disableAmethystKey) {
+                switch (___keyColor) {
+                    case GREEN:
+                        ___img[0] = emeraldKey;
+                        Settings.hasEmeraldKey = true;
+                        break;
+                    case RED:
+                        ___img[0] = rubyKey;
+                        Settings.hasRubyKey = true;
+                        break;
+                    case BLUE:
+                        ___img[0] = sapphireKey;
+                        Settings.hasSapphireKey = true;
+                        break;
+                }
+                if (___keyColor == PURPLE) {
+                    ___img[0] = amethystKey;
+                    AbstractPlayerPatch.hasAmethystKey.set(AbstractDungeon.player, true);
+                }
+                return SpireReturn.Return();
             }
-            if (___keyColor == PURPLE) {
-                ___img[0] = amethystKey;
-                AbstractPlayerPatch.hasAmethystKey.set(AbstractDungeon.player, true);
-            }
-            return SpireReturn.Return();
+            return SpireReturn.Continue();
         }
     }
 }

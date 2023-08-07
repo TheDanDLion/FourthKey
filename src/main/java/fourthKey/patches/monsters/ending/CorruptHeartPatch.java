@@ -14,6 +14,7 @@ import com.megacrit.cardcrawl.powers.MetallicizePower;
 import com.megacrit.cardcrawl.powers.RegenerateMonsterPower;
 import com.megacrit.cardcrawl.powers.StrengthPower;
 
+import fourthKey.ModInitializer;
 import fourthKey.patches.characters.AbstractPlayerPatch;
 
 public class CorruptHeartPatch {
@@ -30,7 +31,7 @@ public class CorruptHeartPatch {
     )
     public static class IncreaseCorruptHeartHealthPatch {
         public static void Postfix(CorruptHeart __instance) {
-            if (AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player)) {
+            if (!ModInitializer.disableAct4Difficulty && AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player)) {
                 __instance.currentHealth = NEW_HP_LIMIT;
                 if (Settings.isEndless && AbstractDungeon.player.hasBlight("ToughEnemies")) {
                     float mod = AbstractDungeon.player.getBlight("ToughEnemies").effectFloat();
@@ -54,7 +55,7 @@ public class CorruptHeartPatch {
             localvars = {"invincibleAmt", "beatAmount"}
         )
         public static void Insert(CorruptHeart __instance, @ByRef int[] invincibleAmt, @ByRef int[] beatAmount) {
-            if (AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player)) {
+            if (!ModInitializer.disableAct4Difficulty && AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player)) {
                 invincibleAmt[0] -= 50;
                 beatAmount[0]++;
                 switch (AbstractDungeon.mapRng.random(0, 3)) {
