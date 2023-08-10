@@ -45,7 +45,6 @@ public class ObtainKeyEffectPatch {
                 }
                 if (keyColor == PURPLE) {
                     ___img[0] = amethystKey;
-                    AbstractPlayerPatch.hasAmethystKey.set(AbstractDungeon.player, true);
                 }
             }
         }
@@ -58,7 +57,7 @@ public class ObtainKeyEffectPatch {
     public static class UpdatePurpleKeyPatch {
 
         @SpireInsertPatch(
-            loc = 56
+            loc = 57
         )
         public static SpireReturn<Void> Insert(@ByRef Texture[] ___img, KeyColor ___keyColor) {
             if (!ModInitializer.disableAmethystKey) {
@@ -78,7 +77,7 @@ public class ObtainKeyEffectPatch {
                 }
                 if (___keyColor == PURPLE) {
                     ___img[0] = amethystKey;
-                    AbstractPlayerPatch.hasAmethystKey.set(AbstractDungeon.player, true);
+                    AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.set(AbstractDungeon.player, true);
                 }
                 return SpireReturn.Return();
             }

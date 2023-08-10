@@ -23,6 +23,8 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.Hitbox;
 import com.megacrit.cardcrawl.localization.EventStrings;
+import com.megacrit.cardcrawl.localization.UIStrings;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -53,6 +55,8 @@ public class ModInitializer implements
     public static boolean disableAct4Difficulty = false;
     public static final String DISABLE_AMETHYST_KEY = "disableAmethystKey";
     public static boolean disableAmethystKey = false;
+    public static final String START_WITH_AMETHYST_KEY = "startWithAmethystKey";
+    public static boolean startWithAmethystKey = false;
 
     //This is for the in-game mod settings panel.
     private static final String MODNAME = "Fourth Key";
@@ -89,11 +93,13 @@ public class ModInitializer implements
         logger.info("Adding mod settings");
         fourthKeyProperties.setProperty(DISABLE_ACT_4_DIFFICULTY, "FALSE");
         fourthKeyProperties.setProperty(DISABLE_AMETHYST_KEY, "FALSE");
+        fourthKeyProperties.setProperty(START_WITH_AMETHYST_KEY, "FALSE");
         try {
             SpireConfig config = new SpireConfig("fourthKey", "fourthKeyConfig", fourthKeyProperties);
             config.load();
             disableAct4Difficulty = config.getBool(DISABLE_ACT_4_DIFFICULTY);
             disableAmethystKey = config.getBool(DISABLE_AMETHYST_KEY);
+            startWithAmethystKey = config.getBool(START_WITH_AMETHYST_KEY);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -202,8 +208,26 @@ public class ModInitializer implements
             }
         });
 
+        ModLabeledToggleButton startWithAmethystKeyButton = new ModLabeledToggleButton("Start with Amethyst Key",
+                350.0f, 600.0f, Settings.CREAM_COLOR, FontHelper.charDescFont,
+                startWithAmethystKey,
+                settingsPanel,
+                (label) -> {},
+                (button) -> {
+
+            startWithAmethystKey = button.enabled;
+            try {
+                SpireConfig config = new SpireConfig("fourthKey", "fourthKeyConfig", fourthKeyProperties);
+                config.setBool(START_WITH_AMETHYST_KEY, startWithAmethystKey);
+                config.save();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
         settingsPanel.addUIElement(disableAct4DifficultyButton);
         settingsPanel.addUIElement(disableAmethystKeyButton);
+        settingsPanel.addUIElement(startWithAmethystKeyButton);
 
         BaseMod.registerModBadge(badgeTexture, MODNAME, AUTHOR, DESCRIPTION, settingsPanel);
 
@@ -218,7 +242,7 @@ public class ModInitializer implements
                 public boolean test() {
                     return !disableAmethystKey
                         && AbstractDungeon.player != null
-                        && !AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player);
+                        && !AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player);
                 }
             })
             .create());
@@ -233,7 +257,7 @@ public class ModInitializer implements
         ObtainKeyEffectPatch.emeraldKey = TextureLoader.getTexture(makeUIPath("topPanel/greenKey.png"));
 
         ShopScreenPatch.amethystKey = TextureLoader.getTexture(makeUIPath("amethystKey.png"));
-        ShopScreenPatch.keyHitbox = new Hitbox(ShopScreenPatch.keyX, ShopScreenPatch.keyY, ShopScreenPatch.amethystKey.getWidth(), ShopScreenPatch.amethystKey.getHeight());
+        ShopScreenPatch.keyHitbox = new Hitbox(ShopScreenPatch.KEY_X, ShopScreenPatch.KEY_Y, ShopScreenPatch.amethystKey.getWidth(), ShopScreenPatch.amethystKey.getHeight());
 
         TopPanelPatch.rubyKey = TextureLoader.getTexture(makeUIPath("topPanel/redKey.png"));
         TopPanelPatch.sapphireKey = TextureLoader.getTexture(makeUIPath("topPanel/blueKey.png"));
@@ -256,10 +280,10 @@ public class ModInitializer implements
                 if (AbstractDungeon.player != null) {
                     logger.info(json);
                     if (json == null) {
-                        AbstractPlayerPatch.hasAmethystKey.set(AbstractDungeon.player, false);
+                        AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.set(AbstractDungeon.player, false);
                     } else {
                         JsonElement key = json.getAsJsonObject().get("purpleKey");
-                        AbstractPlayerPatch.hasAmethystKey.set(AbstractDungeon.player, key == null ? false : key.getAsBoolean());
+                        AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.set(AbstractDungeon.player, key == null ? false : key.getAsBoolean());
                     }
                 }
             }
@@ -269,7 +293,7 @@ public class ModInitializer implements
                 JsonParser parser = new JsonParser();
                 return parser.parse(
                     "{\"purpleKey\":\""
-                    + (AbstractDungeon.player != null ? AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player) : false)
+                    + (AbstractDungeon.player != null ? AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player) : false)
                     + "\"}"
                 );
             }
@@ -291,6 +315,8 @@ public class ModInitializer implements
 
         BaseMod.loadCustomStringsFile(EventStrings.class,
             getModID() + "Resources/localization/eng/fourthKey-Event-Strings.json");
+        BaseMod.loadCustomStringsFile(UIStrings.class,
+            getModID() + "Resources/localization/eng/fourthKey-UI-Strings.json");
 
         logger.info("Done editing strings");
     }

@@ -15,6 +15,6 @@ public class PurpleKeyLose extends ConsoleCommand {
     @Override
     protected void execute(String[] arg0, int arg1) {
         if (!ModInitializer.disableAmethystKey)
-            AbstractPlayerPatch.hasAmethystKey.set(AbstractDungeon.player, false);
+            AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.set(AbstractDungeon.player, false);
     }
 }

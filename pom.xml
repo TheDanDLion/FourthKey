@@ -5,7 +5,7 @@
 
     <groupId>fourthkey</groupId>
     <artifactId>FourthKey</artifactId>
-    <version>0.0.1</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
     <name>FourthKey</name>
     <description>Adds a fourth key to the game to increase the difficulty of Act 4</description>
@@ -14,7 +14,7 @@
         <dependency>
             <groupId>com.megacrit.cardcrawl</groupId>
             <artifactId>slaythespire</artifactId>
-            <version>12-19-2022</version>
+            <version>12-18-2022</version>
             <scope>system</scope>
             <systemPath>${basedir}/../lib/desktop-1.0.jar</systemPath>
         </dependency>
@@ -44,7 +44,7 @@
 
     <properties>
         <ModID>FourthKey</ModID>
-        <SlayTheSpire.version>12-19-2022</SlayTheSpire.version>
+        <SlayTheSpire.version>12-18-2022</SlayTheSpire.version>
         <ModTheSpire.version>3.30.3</ModTheSpire.version>
 
         <maven.compiler.source>1.8</maven.compiler.source>

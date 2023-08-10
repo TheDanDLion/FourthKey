@@ -23,7 +23,7 @@ public class DoorUnlockScreenPatch {
         )
         public static void Insert() {
             if (!ModInitializer.disableAmethystKey)
-                AbstractPlayerPatch.lockPurple.get(AbstractDungeon.player).reset();
+                AbstractPlayerPatch.PurpleKeyPatch.lockPurple.get(AbstractDungeon.player).reset();
         }
     }
 
@@ -37,7 +37,7 @@ public class DoorUnlockScreenPatch {
         )
         public static void Insert(boolean eventVersion) {
             if (!ModInitializer.disableAmethystKey)
-                AbstractPlayerPatch.lockPurple.set(AbstractDungeon.player, new DoorLock(DoorLockPatch.PURPLE, true, eventVersion));
+                AbstractPlayerPatch.PurpleKeyPatch.lockPurple.set(AbstractDungeon.player, new DoorLock(DoorLockPatch.PURPLE, true, eventVersion));
         }
     }
 
@@ -51,7 +51,7 @@ public class DoorUnlockScreenPatch {
         )
         public static void Insert() {
             if (!ModInitializer.disableAmethystKey)
-                AbstractPlayerPatch.lockPurple.get(AbstractDungeon.player).update();
+                AbstractPlayerPatch.PurpleKeyPatch.lockPurple.get(AbstractDungeon.player).update();
         }
     }
 
@@ -62,7 +62,7 @@ public class DoorUnlockScreenPatch {
     public static class DisposeLockPurplePatch {
         public static void Prefix() {
             if (!ModInitializer.disableAmethystKey)
-                AbstractPlayerPatch.lockPurple.get(AbstractDungeon.player).dispose();
+                AbstractPlayerPatch.PurpleKeyPatch.lockPurple.get(AbstractDungeon.player).dispose();
         }
     }
 
@@ -72,11 +72,11 @@ public class DoorUnlockScreenPatch {
     )
     public static class LightUpLockPurplePatch {
         @SpireInsertPatch(
-            loc = 181
+            loc = 194
         )
         public static void Insert(boolean ___eventVersion, float ___lightUpTimer) {
-            if (!ModInitializer.disableAmethystKey && ___lightUpTimer < (Settings.FAST_MODE ? 0.25F : 1.5F)) // TODO: broken on fast mode :(
-                AbstractPlayerPatch.lockPurple.get(AbstractDungeon.player).flash(___eventVersion);
+            if (!ModInitializer.disableAmethystKey && ___lightUpTimer < (Settings.FAST_MODE ? 0.25F : 1.5F))
+                AbstractPlayerPatch.PurpleKeyPatch.lockPurple.get(AbstractDungeon.player).flash(___eventVersion);
         }
     }
 
@@ -87,7 +87,7 @@ public class DoorUnlockScreenPatch {
     public static class UnlockLockPurplePatch {
         public static void Postfix(boolean ___animateCircle) {
             if (!ModInitializer.disableAmethystKey && ___animateCircle)
-                AbstractPlayerPatch.lockPurple.get(AbstractDungeon.player).unlock();
+                AbstractPlayerPatch.PurpleKeyPatch.lockPurple.get(AbstractDungeon.player).unlock();
         }
     }
 
@@ -101,7 +101,7 @@ public class DoorUnlockScreenPatch {
         )
         public static void Insert(SpriteBatch sb) {
             if (!ModInitializer.disableAmethystKey)
-                AbstractPlayerPatch.lockPurple.get(AbstractDungeon.player).render(sb);
+                AbstractPlayerPatch.PurpleKeyPatch.lockPurple.get(AbstractDungeon.player).render(sb);
         }
     }
 

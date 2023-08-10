@@ -1,5 +1,6 @@
 package fourthKey.patches.ui.panels;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
@@ -7,6 +8,7 @@ import com.evacipated.cardcrawl.modthespire.lib.SpirePatch2;
 import com.evacipated.cardcrawl.modthespire.lib.SpireReturn;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
+import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.ui.panels.TopPanel;
 
 import fourthKey.ModInitializer;
@@ -30,7 +32,7 @@ public class TopPanelPatch {
         @SpireInsertPatch(
             loc = 1320
         )
-        public static SpireReturn<Void> Insert(SpriteBatch sb, float ___ICON_Y) {
+        public static SpireReturn<Void> Insert(SpriteBatch sb, float ___ICON_Y, String ___name, String ___title, float ___nameX, float ___NAME_Y, float ___titleX, float ___titleY) {
             if (!ModInitializer.disableAmethystKey) {
                 sb.draw(keySlots, -32.0F + 46.0F * Settings.scale, ___ICON_Y - 32.0F + 29.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
                 if (Settings.hasRubyKey)
@@ -39,8 +41,15 @@ public class TopPanelPatch {
                     sb.draw(emeraldKey, -32.0F + 46.0F * Settings.scale, ___ICON_Y - 32.0F + 29.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
                 if (Settings.hasSapphireKey)
                     sb.draw(sapphireKey, -32.0F + 46.0F * Settings.scale, ___ICON_Y - 32.0F + 29.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
-                if (AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player))
+                if (AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player))
                     sb.draw(amethystKey, -32.0F + 46.0F * Settings.scale, ___ICON_Y - 32.0F + 29.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
+
+                FontHelper.renderFontLeftTopAligned(sb, FontHelper.panelNameFont, ___name, ___nameX, ___NAME_Y, Color.WHITE);
+                if (Settings.isMobile) {
+                    FontHelper.renderFontLeftTopAligned(sb, FontHelper.tipBodyFont, ___title, ___nameX, ___titleY - 30.0F * Settings.scale, Color.LIGHT_GRAY);
+                } else {
+                    FontHelper.renderFontLeftTopAligned(sb, FontHelper.tipBodyFont, ___title, ___titleX, ___titleY, Color.LIGHT_GRAY);
+                }
                 return SpireReturn.Return();
             }
             return SpireReturn.Continue();

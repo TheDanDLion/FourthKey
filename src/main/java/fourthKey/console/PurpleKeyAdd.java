@@ -19,7 +19,7 @@ public class PurpleKeyAdd extends ConsoleCommand {
     protected void execute(String[] tokens, int depth) {
         if (!ModInitializer.disableAmethystKey) {
             Settings.isFinalActAvailable = true;
-            if (!AbstractPlayerPatch.hasAmethystKey.get(AbstractDungeon.player))
+            if (!AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player))
                 AbstractDungeon.topLevelEffects.add(new ObtainKeyEffect(ObtainKeyEffectPatch.PURPLE));
         }
     }

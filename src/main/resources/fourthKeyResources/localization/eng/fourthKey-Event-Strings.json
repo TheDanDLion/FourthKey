@@ -4,22 +4,21 @@
         "DESCRIPTIONS": [
             "You come across a #pmysterious, #pdark #ppurple, #pdoor. Before the door stand several pedestals, each depiciting something different. NL Above the door, a single quote. ~A~ ~sacrifice~ ~must~ ~be~ ~made.~",
             "Blood drips from your hand as you place the dagger back on the pedestal. NL The door slows shifts open, revealing an #pAmethyst #pKey. You take it.",
-            "As you insert your precious gold into the pedestal, the door slowly shifts NL open, revealing an #pAmethyst #pKey. You take it.",
             "You drop the various viles on your belt into the pedestal, the door slowly NL shifts open, revealing an #pAmethyst #pKey. You take it.",
             "You make an offering to the pedestal, something rather important. The door NL slowly shifts open, revealing an #pAmethyst #pKey. You take it.",
-            "You place your relic into the slot in the pedestal. It's a perfect fit and NL locks into place. The door slowly shifts open, revealing an #pAmethyst #pKey. You take it."
+            "You place your relic into the slot in the pedestal. It's a perfect fit and NL locks into place. The door slowly shifts open, revealing an #pAmethyst #pKey. You take it.",
+            "You depart, leaving the #pdark #ppurple #pdoor behind you."
         ],
         "OPTIONS": [
             "Sacrifice #rBlood. Lose ",
-            "Sacrifice ",
             "Sacrifice all #pPotions.",
-            "[Leave]",
+            "Sacrifice ",
             " HP.",
-            " gold.",
-            "[Locked] Requires: ",
-            " potions.",
-            " a rare card.",
-            " a relic."
+            "potions.",
+            "a rare card.",
+            "a relic.",
+            "[Leave]",
+            "[Locked] Requires: "
         ]
     }
 }

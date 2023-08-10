@@ -7,6 +7,7 @@ import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.events.AbstractImageEvent;
+import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.localization.EventStrings;
 import com.megacrit.cardcrawl.potions.AbstractPotion;
 import com.megacrit.cardcrawl.relics.AbstractRelic;
@@ -31,7 +32,6 @@ public class Sacrifice extends AbstractImageEvent {
     private AbstractRelic relicSacrifice;
     private AbstractCard cardSacrifice;
     private int healthSacrifice;
-    private static final int GOLD_SACRIFICE = 49;
 
     private State state;
 
@@ -43,7 +43,7 @@ public class Sacrifice extends AbstractImageEvent {
     public Sacrifice() {
         super(NAME, DESCRIPTIONS[0], makeEventPath("Sacrifice.png"));
 
-        this.healthSacrifice = (int)(AbstractDungeon.player.maxHealth * 0.25);
+        this.healthSacrifice = (int)(AbstractDungeon.player.maxHealth * 0.35);
         if (!AbstractDungeon.player.relics.isEmpty())
             this.relicSacrifice = AbstractDungeon.player.relics.get(AbstractDungeon.cardRandomRng.random(AbstractDungeon.player.relics.size() - 1));
 
@@ -57,24 +57,20 @@ public class Sacrifice extends AbstractImageEvent {
         if (!sacrificeableCards.isEmpty())
             cardSacrifice = sacrificeableCards.getRandomCard(true);
 
-        this.imageEventText.setDialogOption(OPTIONS[0] + healthSacrifice + OPTIONS[4]);
-        if (AbstractDungeon.player.gold >= GOLD_SACRIFICE)
-            this.imageEventText.setDialogOption(OPTIONS[1] + GOLD_SACRIFICE + OPTIONS[5]);
-        else
-            this.imageEventText.setDialogOption(OPTIONS[6] + GOLD_SACRIFICE + OPTIONS[5], true);
+        this.imageEventText.setDialogOption(OPTIONS[0] + healthSacrifice + OPTIONS[3]);
         if (AbstractDungeon.player.hasAnyPotions())
-            this.imageEventText.setDialogOption(OPTIONS[2]);
+            this.imageEventText.setDialogOption(OPTIONS[1]);
         else
-            this.imageEventText.setDialogOption(OPTIONS[6] + OPTIONS[7], true);
+            this.imageEventText.setDialogOption(OPTIONS[8] + OPTIONS[4], true);
         if (cardSacrifice != null)
-            this.imageEventText.setDialogOption(OPTIONS[1] + cardSacrifice.name);
+            this.imageEventText.setDialogOption(OPTIONS[2] + FontHelper.colorString(cardSacrifice.name, "y"), cardSacrifice.makeStatEquivalentCopy());
         else
-            this.imageEventText.setDialogOption(OPTIONS[6] + OPTIONS[8], true);
+            this.imageEventText.setDialogOption(OPTIONS[8] + OPTIONS[5], true);
         if (relicSacrifice != null)
-            this.imageEventText.setDialogOption(OPTIONS[1] + relicSacrifice.name);
+            this.imageEventText.setDialogOption(OPTIONS[2] + FontHelper.colorString(relicSacrifice.name, "r"));
         else
-            this.imageEventText.setDialogOption(OPTIONS[6] + OPTIONS[9], true);
-        this.imageEventText.setDialogOption(OPTIONS[3]); // leave
+            this.imageEventText.setDialogOption(OPTIONS[8] + OPTIONS[6], true);
+        this.imageEventText.setDialogOption(OPTIONS[7]); // leave
 
         this.state = State.INTRO;
 
@@ -97,43 +93,37 @@ public class Sacrifice extends AbstractImageEvent {
                         gainPurpleKey();
                         break;
                     case 1:
-                        CardCrawlGame.sound.play("GOLD_JINGLE");
-                        AbstractDungeon.player.loseGold(GOLD_SACRIFICE);
+                        CardCrawlGame.sound.play("POTION_1");
+                        for (AbstractPotion potion : AbstractDungeon.player.potions)
+                            AbstractDungeon.player.removePotion(potion);
                         this.imageEventText.updateBodyText(DESCRIPTIONS[2]);
                         gainPurpleKey();
                         break;
                     case 2:
-                        CardCrawlGame.sound.play("POTION_1");
-                        for (AbstractPotion potion : AbstractDungeon.player.potions)
-                            AbstractDungeon.player.removePotion(potion);
+                        CardCrawlGame.sound.play("CARD_EXHAUST");
+                        AbstractDungeon.topLevelEffects.add(new PurgeCardEffect(cardSacrifice, Settings.WIDTH / 2.0f, Settings.HEIGHT / 2.0f));
+                        AbstractDungeon.player.masterDeck.removeCard(cardSacrifice);
                         this.imageEventText.updateBodyText(DESCRIPTIONS[3]);
                         gainPurpleKey();
                         break;
                     case 3:
-                        CardCrawlGame.sound.play("CARD_EXHAUST");
-                        AbstractDungeon.topLevelEffects.add(new PurgeCardEffect(cardSacrifice, Settings.WIDTH / 2.0f, Settings.HEIGHT / 2.0f));
-                        AbstractDungeon.player.masterDeck.removeCard(cardSacrifice);
+                        relicSacrifice.playLandingSFX();
+                        AbstractDungeon.player.loseRelic(relicSacrifice.relicId);
                         this.imageEventText.updateBodyText(DESCRIPTIONS[4]);
                         gainPurpleKey();
                         break;
                     case 4:
-                        relicSacrifice.playLandingSFX();
-                        AbstractDungeon.player.loseRelic(relicSacrifice.relicId);
                         this.imageEventText.updateBodyText(DESCRIPTIONS[5]);
-                        gainPurpleKey();
-                        break;
-                    case 5:
-                        this.imageEventText.updateBodyText(DESCRIPTIONS[6]);
                         break;
                 }
                 this.imageEventText.clearAllDialogs();
-                this.imageEventText.setDialogOption(OPTIONS[3]);
+                this.imageEventText.setDialogOption(OPTIONS[7]);
                 this.state = State.LEAVING;
                 AbstractDungeon.getCurrRoom().phase = RoomPhase.COMPLETE;
                 break;
             case LEAVING:
                 this.imageEventText.clearAllDialogs();
-                this.imageEventText.setDialogOption(OPTIONS[3]);
+                this.imageEventText.setDialogOption(OPTIONS[7]);
                 openMap();
                 break;
         }
