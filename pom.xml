@@ -5,7 +5,7 @@
 
     <groupId>fourthkey</groupId>
     <artifactId>FourthKey</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <packaging>jar</packaging>
     <name>FourthKey</name>
     <description>Adds a fourth key to the game to increase the difficulty of Act 4</description>
@@ -85,7 +85,7 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <copy file="target/FourthKey.jar" tofile="../_ModTheSpire/FourthKey/content/FourthKey.jar"/>
+                                <copy file="target/FourthKey.jar" tofile="../_ModTheSpire/mods/FourthKey.jar"/>
                             </target>
                         </configuration>
                         <goals>

@@ -43,7 +43,7 @@ public class ShopScreenPatch {
         AbstractDungeon.player.loseGold(cost);
         CardCrawlGame.sound.play("SHOP_PURCHASE", 0.1F);
         AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.set(AbstractDungeon.player, true);
-        AbstractDungeon.effectsQueue.add(new ObtainKeyEffect(ObtainKeyEffectPatch.PURPLE));
+        AbstractDungeon.topLevelEffects.add(new ObtainKeyEffect(ObtainKeyEffectPatch.PURPLE));
     }
 
     private static void updatePurpleKey(ShopScreen __instance) {

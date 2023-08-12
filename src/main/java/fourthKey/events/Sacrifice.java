@@ -78,7 +78,7 @@ public class Sacrifice extends AbstractImageEvent {
     }
 
     private void gainPurpleKey() {
-        AbstractDungeon.effectsQueue.add(new ObtainKeyEffect(ObtainKeyEffectPatch.PURPLE));
+        AbstractDungeon.topLevelEffects.add(new ObtainKeyEffect(ObtainKeyEffectPatch.PURPLE));
     }
 
     @Override

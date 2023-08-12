@@ -4,5 +4,16 @@
             "Amethyst Key",
             "A purple key made purely of amethyst. It's very pretty."
         ]
+    },
+    "fourthKey:BustPurpleKeyOption": {
+        "TEXT": [
+            "Break Amethyst",
+            "(Free Action) Spend 50 Souls: Destroy key to ",
+            "start Boss combats with 1 extra energy or draw on turn 1.",
+            "Key shattered!",
+            "Requires ",
+            " Souls.",
+            "(Free Action) Destroy key to "
+        ]
     }
 }

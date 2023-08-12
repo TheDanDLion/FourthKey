@@ -1,5 +1,5 @@
 # BlankMod
-Blank mod for STS modding projects. Should work right out of the gate, run:
+Adds a fourth key to the game, the Amethyst key, and increases the difficulty of the fourth act. Should work right out of the gate, run:
 
 `mvn package`
 

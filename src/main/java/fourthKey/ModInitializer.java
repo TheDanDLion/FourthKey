@@ -4,15 +4,21 @@ import basemod.BaseMod;
 import basemod.ModLabeledToggleButton;
 import basemod.ModPanel;
 import basemod.abstracts.CustomSavableRaw;
-import basemod.devcommands.ConsoleCommand;
 import basemod.eventUtil.AddEventParams;
 import basemod.eventUtil.EventUtils;
 import basemod.eventUtil.util.Condition;
+import basemod.helpers.RelicType;
+import basemod.interfaces.EditRelicsSubscriber;
 import basemod.interfaces.EditStringsSubscriber;
+import basemod.interfaces.PostDeathSubscriber;
+import basemod.interfaces.PostDungeonInitializeSubscriber;
 import basemod.interfaces.PostInitializeSubscriber;
+import basemod.interfaces.StartActSubscriber;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
+import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.SpireConfig;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInitializer;
 import com.google.gson.Gson;
@@ -23,8 +29,8 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.helpers.Hitbox;
 import com.megacrit.cardcrawl.localization.EventStrings;
+import com.megacrit.cardcrawl.localization.RelicStrings;
 import com.megacrit.cardcrawl.localization.UIStrings;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -32,19 +38,23 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fourthKey.console.*;
-import fourthKey.events.*;
+import fourthKey.events.Sacrifice;
 import fourthKey.patches.characters.AbstractPlayerPatch;
 import fourthKey.patches.shop.ShopScreenPatch;
 import fourthKey.patches.ui.panels.TopPanelPatch;
 import fourthKey.patches.vfx.ObtainKeyEffectPatch;
+import fourthKey.relics.HeartBlessingPurple;
 import fourthKey.util.IDCheckDontTouchPls;
 import fourthKey.util.TextureLoader;
 
 @SpireInitializer
 public class ModInitializer implements
     EditStringsSubscriber,
-    PostInitializeSubscriber {
+    EditRelicsSubscriber,
+    PostDeathSubscriber,
+    PostDungeonInitializeSubscriber,
+    PostInitializeSubscriber,
+    StartActSubscriber {
 
     public static final Logger logger = LogManager.getLogger(ModInitializer.class.getName());
     private static String modID;
@@ -57,6 +67,9 @@ public class ModInitializer implements
     public static boolean disableAmethystKey = false;
     public static final String START_WITH_AMETHYST_KEY = "startWithAmethystKey";
     public static boolean startWithAmethystKey = false;
+
+    // Downfall Compatability settings
+    public static boolean downfallEvilMode = false;
 
     //This is for the in-game mod settings panel.
     private static final String MODNAME = "Fourth Key";
@@ -76,6 +89,10 @@ public class ModInitializer implements
 
     public static String makeUIPath(String resourcePath) {
         return getModID() + "Resources/images/ui/" + resourcePath;
+    }
+
+    public static String makeRelicPath(String resourcePath) {
+        return getModID() + "Resources/images/relics/" + resourcePath;
     }
 
     // =============== /MAKE IMAGE PATHS/ =================
@@ -121,7 +138,7 @@ public class ModInitializer implements
         } else if (ID.equals(EXCEPTION_STRINGS.DEVID)) { // NO
             modID = EXCEPTION_STRINGS.DEFAULTID; // DON'T
         } else { // NO EDIT AREA
-            modID = ID; // DON'T WRITE OR CHANGE THINGS HERE NOT EVEN A LITTLE
+            modID = ID; // DON'T WRITE OR    public static URLClassLoader downfallClassLoader = null; CHANGE THINGS HERE NOT EVEN A LITTLE
         } // NO
         logger.info("Success! ID is " + modID); // WHY WOULD U WANT IT NOT TO LOG?? DON'T EDIT THIS.
     } // NO
@@ -259,17 +276,17 @@ public class ModInitializer implements
         ShopScreenPatch.amethystKey = TextureLoader.getTexture(makeUIPath("amethystKey.png"));
         ShopScreenPatch.keyHitbox = new Hitbox(ShopScreenPatch.KEY_X, ShopScreenPatch.KEY_Y, ShopScreenPatch.amethystKey.getWidth(), ShopScreenPatch.amethystKey.getHeight());
 
+        TopPanelPatch.keySlots = TextureLoader.getTexture(makeUIPath("topPanel/keySlots.png"));
         TopPanelPatch.rubyKey = TextureLoader.getTexture(makeUIPath("topPanel/redKey.png"));
         TopPanelPatch.sapphireKey = TextureLoader.getTexture(makeUIPath("topPanel/blueKey.png"));
         TopPanelPatch.emeraldKey = TextureLoader.getTexture(makeUIPath("topPanel/greenKey.png"));
         TopPanelPatch.amethystKey = TextureLoader.getTexture(makeUIPath("topPanel/purpleKey.png"));
-        TopPanelPatch.keySlots = TextureLoader.getTexture(makeUIPath("topPanel/keySlots.png"));
+        // vvv Downfall vvv
+        TopPanelPatch.brokenRubyKey = TextureLoader.getTexture(makeUIPath("topPanel/brokenRedKey.png"));
+        TopPanelPatch.brokenSapphireKey = TextureLoader.getTexture(makeUIPath("topPanel/brokenBlueKey.png"));
+        TopPanelPatch.brokenEmeraldKey = TextureLoader.getTexture(makeUIPath("topPanel/brokenGreenKey.png"));
+        TopPanelPatch.brokenAmethystKey = TextureLoader.getTexture(makeUIPath("topPanel/brokenPurpleKey.png"));
         // =============== /TEXTURES/ =================
-
-        // =============== COMMANDS =================
-        logger.info("Adding commands");
-        ConsoleCommand.addCommand("purpleKey", PurpleKey.class);
-        // =============== /COMMANDS/ =================
 
         // =============== SAVE FIELDS =================
         logger.info("Adding save fields");
@@ -279,11 +296,19 @@ public class ModInitializer implements
             public void onLoadRaw(JsonElement json) {
                 if (AbstractDungeon.player != null) {
                     logger.info(json);
-                    if (json == null) {
-                        AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.set(AbstractDungeon.player, false);
-                    } else {
+                    if (json != null) {
                         JsonElement key = json.getAsJsonObject().get("purpleKey");
                         AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.set(AbstractDungeon.player, key == null ? false : key.getAsBoolean());
+                        JsonElement brokenPurpleKey = json.getAsJsonObject().get("brokenPurpleKey");
+                        AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenAmethystKey.set(AbstractDungeon.player, brokenPurpleKey == null ? false : brokenPurpleKey.getAsBoolean());
+                        JsonElement brokenRedKey = json.getAsJsonObject().get("brokenRedKey");
+                        AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenRubyKey.set(AbstractDungeon.player, brokenRedKey == null ? false : brokenRedKey.getAsBoolean());
+                        JsonElement brokenBlueKey = json.getAsJsonObject().get("brokenBlueKey");
+                        AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenSapphireKey.set(AbstractDungeon.player, brokenBlueKey == null ? false : brokenBlueKey.getAsBoolean());
+                        JsonElement brokenGreenKey = json.getAsJsonObject().get("brokenGreenKey");
+                        AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenEmeraldKey.set(AbstractDungeon.player, brokenGreenKey == null ? false : brokenGreenKey.getAsBoolean());
+                        JsonElement evilMode = json.getAsJsonObject().get("evilMode");
+                        ModInitializer.downfallEvilMode = !Loader.isModLoaded("downfall") || evilMode == null ? false : evilMode.getAsBoolean();
                     }
                 }
             }
@@ -294,14 +319,22 @@ public class ModInitializer implements
                 return parser.parse(
                     "{\"purpleKey\":\""
                     + (AbstractDungeon.player != null ? AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player) : false)
+                    + "\", \"brokenPurpleKey\":\""
+                    + (AbstractDungeon.player != null ? AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenAmethystKey.get(AbstractDungeon.player) : false)
+                    + "\", \"brokenRedKey\":\""
+                    + (AbstractDungeon.player != null ? AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenRubyKey.get(AbstractDungeon.player) : false)
+                    + "\", \"brokenBlueKey\":\""
+                    + (AbstractDungeon.player != null ? AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenSapphireKey.get(AbstractDungeon.player) : false)
+                    + "\", \"brokenGreenKey\":\""
+                    + (AbstractDungeon.player != null ? AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenEmeraldKey.get(AbstractDungeon.player) : false)
+                    + "\", \"evilMode\":\""
+                    + ModInitializer.downfallEvilMode
                     + "\"}"
                 );
             }
         });
         // =============== /SAVE FIELDS/ =================
-
     }
-
     // =============== /POST-INITIALIZE/ =================
 
 
@@ -315,6 +348,8 @@ public class ModInitializer implements
 
         BaseMod.loadCustomStringsFile(EventStrings.class,
             getModID() + "Resources/localization/eng/fourthKey-Event-Strings.json");
+        BaseMod.loadCustomStringsFile(RelicStrings.class,
+            getModID() + "Resources/localization/eng/fourthKey-Relic-Strings.json");
         BaseMod.loadCustomStringsFile(UIStrings.class,
             getModID() + "Resources/localization/eng/fourthKey-UI-Strings.json");
 
@@ -323,9 +358,44 @@ public class ModInitializer implements
 
     // ================ /LOAD THE TEXT/ ===================
 
+
+    // ================ LOAD RELICS ===================
+    @Override
+    public void receiveEditRelics() {
+        if (Loader.isModLoaded("downfall")) {
+            logger.info("Downfall detected, adding relics");
+            BaseMod.addRelic(new HeartBlessingPurple(), RelicType.SHARED);
+        }
+    }
+    // ================ /LOAD RELICS/ ===================
+
+
+    // ================ POST DUNGEON INIT ===================
+    @Override
+    public void receivePostDungeonInitialize() {
+        if (!ModInitializer.disableAmethystKey && ModInitializer.startWithAmethystKey) {
+            logger.info("Starting with Amethyst Key");
+            AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.set(AbstractDungeon.player, true);
+        }
+    }
+    // ================ / POST DUNGEON INIT/ ===================
+
+
+    // ================ POST DEATH ===================
+    @Override
+    public void receivePostDeath() {
+        ModInitializer.downfallEvilMode = false;
+    }
+    // ================ / POST DEATH/ ===================
+
     // this adds "ModName:" before the ID of any card/relic/power etc.
     // in order to avoid conflicts if any other mod uses the same ID.
     public static String makeID(String idText) {
         return getModID() + ":" + idText;
+    }
+
+    @Override
+    public void receiveStartAct() {
+        logger.info(ModInitializer.downfallEvilMode);
     }
 }

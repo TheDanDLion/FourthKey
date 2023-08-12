@@ -22,6 +22,11 @@ public class TopPanelPatch {
     public static Texture amethystKey;
     public static Texture keySlots;
 
+    // compatability with Downfall
+    public static Texture brokenRubyKey;
+    public static Texture brokenEmeraldKey;
+    public static Texture brokenSapphireKey;
+    public static Texture brokenAmethystKey;
 
     @SpirePatch2(
         clz = TopPanel.class,
@@ -35,14 +40,26 @@ public class TopPanelPatch {
         public static SpireReturn<Void> Insert(SpriteBatch sb, float ___ICON_Y, String ___name, String ___title, float ___nameX, float ___NAME_Y, float ___titleX, float ___titleY) {
             if (!ModInitializer.disableAmethystKey) {
                 sb.draw(keySlots, -32.0F + 46.0F * Settings.scale, ___ICON_Y - 32.0F + 29.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
-                if (Settings.hasRubyKey)
+
+                boolean evilMode = ModInitializer.downfallEvilMode;
+
+                if (evilMode && AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenRubyKey.get(AbstractDungeon.player))
+                    sb.draw(brokenRubyKey, -32.0F + 46.0F * Settings.scale, ___ICON_Y - 32.0F + 29.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
+                else if (Settings.hasRubyKey)
                     sb.draw(rubyKey, -32.0F + 46.0F * Settings.scale, ___ICON_Y - 32.0F + 29.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
-                if (Settings.hasEmeraldKey)
+                if (evilMode && AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenEmeraldKey.get(AbstractDungeon.player))
+                    sb.draw(brokenEmeraldKey, -32.0F + 46.0F * Settings.scale, ___ICON_Y - 32.0F + 29.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
+                else if (Settings.hasEmeraldKey)
                     sb.draw(emeraldKey, -32.0F + 46.0F * Settings.scale, ___ICON_Y - 32.0F + 29.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
-                if (Settings.hasSapphireKey)
+                if (evilMode && AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenSapphireKey.get(AbstractDungeon.player))
+                    sb.draw(brokenSapphireKey, -32.0F + 46.0F * Settings.scale, ___ICON_Y - 32.0F + 29.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
+                else if (Settings.hasSapphireKey)
                     sb.draw(sapphireKey, -32.0F + 46.0F * Settings.scale, ___ICON_Y - 32.0F + 29.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
-                if (AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player))
+                if (evilMode && AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenAmethystKey.get(AbstractDungeon.player))
+                    sb.draw(brokenAmethystKey, -32.0F + 46.0F * Settings.scale, ___ICON_Y - 32.0F + 29.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
+                else if (AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player))
                     sb.draw(amethystKey, -32.0F + 46.0F * Settings.scale, ___ICON_Y - 32.0F + 29.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
+
 
                 FontHelper.renderFontLeftTopAligned(sb, FontHelper.panelNameFont, ___name, ___nameX, ___NAME_Y, Color.WHITE);
                 if (Settings.isMobile) {
