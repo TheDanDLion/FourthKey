@@ -1,4 +1,4 @@
-package fourthKey.patches.downfall.monsters;
+    package fourthKey.patches.downfall.monsters;
 
 import com.evacipated.cardcrawl.modthespire.lib.ByRef;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
@@ -19,10 +19,6 @@ import javassist.expr.MethodCall;
 import fourthKey.ModInitializer;
 
 public class NeowBossFinalPatch {
-    public static int adjustHp(int hp) {
-        return (ModInitializer.downfallEvilMode ? hp += 100 : hp);
-    }
-
     @SpirePatch2(
         cls = "downfall.monsters.NeowBossFinal",
         method = SpirePatch.CONSTRUCTOR,
@@ -34,7 +30,7 @@ public class NeowBossFinalPatch {
                 public void edit(MethodCall m) throws CannotCompileException {
                     if (!ModInitializer.disableAct4Difficulty && m.getClassName().equals(AbstractMonster.class.getName())
                         && m.getMethodName().equals("setHp")) {
-                        m.replace("{$proceed(NeowBossFinalPatch.adjustHp($1));}");
+                        m.replace("{$proceed($1+100);}");
                     }
                 }
             };
