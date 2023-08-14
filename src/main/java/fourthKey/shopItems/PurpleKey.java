@@ -23,16 +23,8 @@ public class PurpleKey extends CustomShopItem {
     }
 
     @Override
-    public void update(float rugY) {
-        int cost = (int)(KEY_COST
-            * (AbstractDungeon.player.hasRelic("The Courier") ? 0.8 : 1.0)
-            * (AbstractDungeon.player.hasRelic("Membership Card") ? 0.5 : 1.0));
-        this.price = cost;
-        super.update(rugY);
-    }
-
-    @Override
     public void purchase() {
+        super.purchase();
         AbstractDungeon.player.loseGold(this.price);
         CardCrawlGame.sound.play("SHOP_PURCHASE", 0.1F);
         AbstractDungeon.topLevelEffects.add(new ObtainKeyEffect(ObtainKeyEffectPatch.PURPLE));
