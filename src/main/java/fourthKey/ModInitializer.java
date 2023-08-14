@@ -4,6 +4,7 @@ import basemod.BaseMod;
 import basemod.ModLabeledToggleButton;
 import basemod.ModPanel;
 import basemod.abstracts.CustomSavableRaw;
+import basemod.abstracts.CustomShopItem;
 import basemod.eventUtil.AddEventParams;
 import basemod.eventUtil.EventUtils;
 import basemod.eventUtil.util.Condition;
@@ -13,7 +14,9 @@ import basemod.interfaces.EditStringsSubscriber;
 import basemod.interfaces.PostDeathSubscriber;
 import basemod.interfaces.PostDungeonInitializeSubscriber;
 import basemod.interfaces.PostInitializeSubscriber;
+import basemod.interfaces.PostShopInitializeSubscriber;
 import basemod.interfaces.StartActSubscriber;
+import basemod.patches.com.megacrit.cardcrawl.shop.ShopScreen.ShopItemGrid;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -27,10 +30,12 @@ import com.google.gson.JsonParser;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.FontHelper;
-import com.megacrit.cardcrawl.helpers.Hitbox;
 import com.megacrit.cardcrawl.localization.EventStrings;
 import com.megacrit.cardcrawl.localization.RelicStrings;
 import com.megacrit.cardcrawl.localization.UIStrings;
+import com.megacrit.cardcrawl.shop.StorePotion;
+import com.megacrit.cardcrawl.shop.StoreRelic;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -40,10 +45,10 @@ import org.apache.logging.log4j.Logger;
 
 import fourthKey.events.Sacrifice;
 import fourthKey.patches.characters.AbstractPlayerPatch;
-import fourthKey.patches.shop.ShopScreenPatch;
 import fourthKey.patches.ui.panels.TopPanelPatch;
 import fourthKey.patches.vfx.ObtainKeyEffectPatch;
 import fourthKey.relics.HeartBlessingPurple;
+import fourthKey.shopItems.PurpleKey;
 import fourthKey.util.IDCheckDontTouchPls;
 import fourthKey.util.TextureLoader;
 
@@ -54,6 +59,7 @@ public class ModInitializer implements
     PostDeathSubscriber,
     PostDungeonInitializeSubscriber,
     PostInitializeSubscriber,
+    PostShopInitializeSubscriber,
     StartActSubscriber {
 
     public static final Logger logger = LogManager.getLogger(ModInitializer.class.getName());
@@ -273,8 +279,7 @@ public class ModInitializer implements
         ObtainKeyEffectPatch.rubyKey = TextureLoader.getTexture(makeUIPath("topPanel/redKey.png"));
         ObtainKeyEffectPatch.emeraldKey = TextureLoader.getTexture(makeUIPath("topPanel/greenKey.png"));
 
-        ShopScreenPatch.amethystKey = TextureLoader.getTexture(makeUIPath("amethystKey.png"));
-        ShopScreenPatch.keyHitbox = new Hitbox(ShopScreenPatch.KEY_X, ShopScreenPatch.KEY_Y, ShopScreenPatch.amethystKey.getWidth(), ShopScreenPatch.amethystKey.getHeight());
+        PurpleKey.amethystKey = TextureLoader.getTexture(makeUIPath("amethystKey.png"));
 
         TopPanelPatch.keySlots = TextureLoader.getTexture(makeUIPath("topPanel/keySlots.png"));
         TopPanelPatch.rubyKey = TextureLoader.getTexture(makeUIPath("topPanel/redKey.png"));
@@ -387,6 +392,20 @@ public class ModInitializer implements
         ModInitializer.downfallEvilMode = false;
     }
     // ================ / POST DEATH/ ===================
+
+    // ================ POST SHOP INITIALIZE ===================
+    @Override
+    public void receivePostShopInitialize() {
+        if (!disableAmethystKey && !AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player)) {
+            logger.info("Adding Amethyst Key to shop");
+            ShopItemGrid.addItem(new PurpleKey());
+        }
+        ShopItemGrid.addItem(new CustomShopItem(new StorePotion(AbstractDungeon.returnRandomPotion(), ShopItemGrid.getNextSlot(), AbstractDungeon.shopScreen)));
+        for (int i = 0; i < 12; i++) {
+            ShopItemGrid.addItem(new CustomShopItem(new StoreRelic(AbstractDungeon.returnRandomRelic(AbstractDungeon.returnRandomRelicTier()), ShopItemGrid.getNextSlot(), AbstractDungeon.shopScreen)));
+        }
+    }
+    // ================ / POST SHOP INITIALIZE/ ===================
 
     // this adds "ModName:" before the ID of any card/relic/power etc.
     // in order to avoid conflicts if any other mod uses the same ID.
