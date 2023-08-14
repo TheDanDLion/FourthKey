@@ -4,6 +4,7 @@ import basemod.BaseMod;
 import basemod.ModLabeledToggleButton;
 import basemod.ModPanel;
 import basemod.abstracts.CustomSavableRaw;
+import basemod.abstracts.CustomShopItem;
 import basemod.eventUtil.AddEventParams;
 import basemod.eventUtil.EventUtils;
 import basemod.eventUtil.util.Condition;
@@ -32,6 +33,9 @@ import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.localization.EventStrings;
 import com.megacrit.cardcrawl.localization.RelicStrings;
 import com.megacrit.cardcrawl.localization.UIStrings;
+import com.megacrit.cardcrawl.shop.StorePotion;
+import com.megacrit.cardcrawl.shop.StoreRelic;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -400,6 +404,10 @@ public class FourthKeyInitializer implements
         if (!disableAmethystKey && !AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player)) {
             logger.info("Adding Amethyst Key to shop");
             ShopItemGrid.addItem(new PurpleKey());
+        }
+        ShopItemGrid.addItem(new CustomShopItem(new StorePotion(AbstractDungeon.returnRandomPotion(), ShopItemGrid.getNextSlot(), AbstractDungeon.shopScreen)));
+        for (int i = 0; i < 12; i++) {
+            ShopItemGrid.addItem(new CustomShopItem(new StoreRelic(AbstractDungeon.returnRandomRelic(AbstractDungeon.returnRandomRelicTier()), ShopItemGrid.getNextSlot(), AbstractDungeon.shopScreen)));
         }
     }
     // ================ / POST SHOP INITIALIZE/ ===================
