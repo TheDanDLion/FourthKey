@@ -7,7 +7,7 @@ import com.megacrit.cardcrawl.rooms.CampfireUI;
 import com.megacrit.cardcrawl.ui.campfire.AbstractCampfireOption;
 import java.util.ArrayList;
 
-import fourthKey.ModInitializer;
+import fourthKey.FourthKeyInitializer;
 import fourthKey.campfire.BustPurpleKeyOption;
 import fourthKey.patches.characters.AbstractPlayerPatch;
 
@@ -24,7 +24,7 @@ public class CampfireUIPatch {
             loc = 97
         )
         public static void Insert(ArrayList<AbstractCampfireOption> ___buttons) {
-            if (ModInitializer.downfallEvilMode
+            if (FourthKeyInitializer.downfallEvilMode
                 && AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player)
                 && !AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenAmethystKey.get(AbstractDungeon.player)) {
                 ___buttons.add(new BustPurpleKeyOption());

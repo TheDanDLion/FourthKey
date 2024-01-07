@@ -16,8 +16,8 @@ import fourthKey.relics.HeartBlessingPurple;
 import fourthKey.util.TextureLoader;
 import fourthKey.vfx.campfire.BustKeyEffectCopy;
 
-import static fourthKey.ModInitializer.makeID;
-import static fourthKey.ModInitializer.makeUIPath;
+import static fourthKey.FourthKeyInitializer.makeID;
+import static fourthKey.FourthKeyInitializer.makeUIPath;
 
 /**
  * Most of the following code is copied from the BustKeyOption class in the

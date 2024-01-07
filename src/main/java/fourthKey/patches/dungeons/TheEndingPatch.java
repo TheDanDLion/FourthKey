@@ -5,7 +5,7 @@ import com.evacipated.cardcrawl.modthespire.lib.SpirePatch2;
 import com.megacrit.cardcrawl.dungeons.TheEnding;
 import com.megacrit.cardcrawl.map.MapRoomNode;
 
-import fourthKey.ModInitializer;
+import fourthKey.FourthKeyInitializer;
 
 public class TheEndingPatch {
 
@@ -20,7 +20,7 @@ public class TheEndingPatch {
             localvars = {"enemyNode"}
         )
         public static void Insert(MapRoomNode enemyNode) {
-            if (!ModInitializer.disableAct4Difficulty) {
+            if (!FourthKeyInitializer.disableAct4Difficulty) {
                 enemyNode.hasEmeraldKey = true;
             }
         }

@@ -13,9 +13,9 @@ import com.megacrit.cardcrawl.helpers.ImageMaster;
 import com.megacrit.cardcrawl.screens.DoorLock;
 import com.megacrit.cardcrawl.screens.DoorLock.LockColor;
 
-import fourthKey.ModInitializer;
+import fourthKey.FourthKeyInitializer;
 
-import static fourthKey.ModInitializer.makeUIPath;
+import static fourthKey.FourthKeyInitializer.makeUIPath;
 
 public class DoorLockPatch {
 
@@ -28,7 +28,7 @@ public class DoorLockPatch {
     )
     public static class DoorLockConstructorPatch {
         public static void Postfix(LockColor c, @ByRef Texture[] ___lockImg, @ByRef Texture[] ___glowImg, @ByRef float[] ___targetY, @ByRef boolean[] ___glowing, boolean eventVersion) {
-            if (!ModInitializer.disableAmethystKey) {
+            if (!FourthKeyInitializer.disableAmethystKey) {
                 switch (c) {
                     case BLUE:
                         ___lockImg[0] = ImageMaster.loadImage(makeUIPath("blueLock.png"));
@@ -63,7 +63,7 @@ public class DoorLockPatch {
             loc = 87
         )
         public static SpireReturn<Void> Insert(LockColor ___c, float ___unlockTimer, float ___startY, float ___targetY, @ByRef float[] ___x, @ByRef float[] ___y) {
-            if (!ModInitializer.disableAmethystKey) {
+            if (!FourthKeyInitializer.disableAmethystKey) {
                 switch (___c) {
                     case BLUE:
                         ___x[0] = Interpolation.pow5In.apply(1000.0F * Settings.scale, 0.0F, ___unlockTimer / 2.0F);

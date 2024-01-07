@@ -17,8 +17,8 @@ import com.megacrit.cardcrawl.vfx.cardManip.PurgeCardEffect;
 
 import fourthKey.patches.vfx.ObtainKeyEffectPatch;
 
-import static fourthKey.ModInitializer.makeID;
-import static fourthKey.ModInitializer.makeEventPath;
+import static fourthKey.FourthKeyInitializer.makeID;
+import static fourthKey.FourthKeyInitializer.makeEventPath;
 
 public class Sacrifice extends AbstractImageEvent {
 

@@ -10,7 +10,7 @@ import com.megacrit.cardcrawl.powers.MetallicizePower;
 import com.megacrit.cardcrawl.powers.RegenerateMonsterPower;
 import com.megacrit.cardcrawl.powers.StrengthPower;
 
-import fourthKey.ModInitializer;
+import fourthKey.FourthKeyInitializer;
 
 @SpirePatch2(
     cls = "downfall.actions.NeowRezAction",
@@ -23,7 +23,7 @@ public class NeowRezActionPatch {
         localvars = {"q"}
     )
     public static void Insert(AbstractMonster q) {
-        if (ModInitializer.downfallEvilMode && !ModInitializer.disableAct4Difficulty && AbstractDungeon.actNum == 4) {
+        if (FourthKeyInitializer.downfallEvilMode && !FourthKeyInitializer.disableAct4Difficulty && AbstractDungeon.actNum == 4) {
             switch(AbstractDungeon.miscRng.random(0, 3)) {
                 case 0:
                     AbstractDungeon.actionManager.addToBottom(new ApplyPowerAction(q, q, new StrengthPower(q, 2), 2));

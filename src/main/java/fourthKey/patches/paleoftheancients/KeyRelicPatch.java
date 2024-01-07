@@ -17,6 +17,7 @@ import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.localization.RelicStrings;
 import com.megacrit.cardcrawl.powers.watcher.MantraPower;
+import com.megacrit.cardcrawl.relics.AbstractRelic;
 
 import basemod.ReflectionHacks;
 import basemod.abstracts.CustomRelic;
@@ -58,10 +59,11 @@ public class KeyRelicPatch {
     public static class UpdateDescriptionPatch {
         public static String Postfix(String __result) {
             StringBuilder result = new StringBuilder();
-            return result.append(__result)
-                .append(" ")
-                .append(DESCRIPTIONS[0])
-                .toString();
+            result.append(__result);
+            if (!FourthKeyInitializer.disableAmethystKey && AbstractDungeon.player != null && AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player)) {
+                result.append(" ").append(DESCRIPTIONS[0]);
+            }
+            return result.toString();
         }
     }
 
@@ -110,7 +112,7 @@ public class KeyRelicPatch {
     public static class RenderFourthKeyInTopPanelPatch {
 
         private static void draw(SpriteBatch sb, CustomRelic __instance, Texture img, float offsetX) {
-            sb.draw(img, __instance.currentX - 64.0F + offsetX, __instance.currentY - 64.0F, 64.0F, 64.0F, 128.0F, 128.0F, __instance.scale, __instance.scale, 0F, 0, 0, 128, 128, false, false);
+            sb.draw(img, __instance.currentX - 32.0F + offsetX, __instance.currentY - 32.0F, 32.0F, 32.0F, 64.0F, 64.0F, __instance.scale, __instance.scale, 0F, 0, 0, 64, 64, false, false);
         }
 
         @SpireInsertPatch(
@@ -118,12 +120,13 @@ public class KeyRelicPatch {
         )
         public static SpireReturn<Void> Insert(CustomRelic __instance, SpriteBatch sb) {
             if (!FourthKeyInitializer.disableAmethystKey) {
-                float offsetX = ReflectionHacks.getPrivate(__instance, float.class, "offsetX");
+                float offsetX = ((Float)ReflectionHacks.getPrivateStatic(AbstractRelic.class, "offsetX")).floatValue();
+                draw(sb, __instance, __instance.img, offsetX);
                 if (Settings.hasRubyKey)
                     draw(sb, __instance, TopPanelPatch.rubyKey, offsetX);
                 if (Settings.hasEmeraldKey)
                     draw(sb, __instance, TopPanelPatch.emeraldKey, offsetX);
-                if (Settings.hasEmeraldKey)
+                if (Settings.hasSapphireKey)
                     draw(sb, __instance, TopPanelPatch.sapphireKey, offsetX);
                 if (AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player))
                     draw(sb, __instance, TopPanelPatch.amethystKey, offsetX);
@@ -137,7 +140,7 @@ public class KeyRelicPatch {
         private static class Locator extends SpireInsertLocator {
             @Override
             public int[] Locate(CtBehavior ct) throws Exception {
-                Matcher finalMatcher = new Matcher.FieldAccessMatcher(Settings.class, "hasRubyKey");
+                Matcher finalMatcher = new Matcher.MethodCallMatcher(SpriteBatch.class, "draw");
                 return LineFinder.findInOrder(ct, finalMatcher);
             }
         }

@@ -4,7 +4,7 @@ import com.evacipated.cardcrawl.modthespire.lib.SpirePatch2;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 
-import fourthKey.ModInitializer;
+import fourthKey.FourthKeyInitializer;
 
 public class AbstractMonsterPatch {
     @SpirePatch2(
@@ -15,8 +15,8 @@ public class AbstractMonsterPatch {
     public static class ResetEvilModeFlagPatch {
         public static void Prefix() {
             if (AbstractDungeon.actNum == 4)
-                ModInitializer.downfallEvilMode = false;
-            ModInitializer.logger.info(ModInitializer.downfallEvilMode);
+                FourthKeyInitializer.downfallEvilMode = false;
+            FourthKeyInitializer.logger.info(FourthKeyInitializer.downfallEvilMode);
         }
     }
 }

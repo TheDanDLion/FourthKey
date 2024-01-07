@@ -9,7 +9,7 @@ import com.evacipated.cardcrawl.modthespire.lib.SpirePatch2;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.screens.DoorLock;
 
-import fourthKey.ModInitializer;
+import fourthKey.FourthKeyInitializer;
 import fourthKey.relics.HeartBlessingPurple;
 
 public class AbstractPlayerPatch {
@@ -44,8 +44,8 @@ public class AbstractPlayerPatch {
             localvars = {"relics"}
         )
         public static void Insert(AbstractPlayer __instance, ArrayList<String> relics) {
-            if (ModInitializer.startWithAmethystKey && ModInitializer.downfallEvilMode) {
-                ModInitializer.logger.info("Downfall Detected: Starting with Broken Amethyst Key");
+            if (FourthKeyInitializer.startWithAmethystKey && FourthKeyInitializer.downfallEvilMode) {
+                FourthKeyInitializer.logger.info("Downfall Detected: Starting with Broken Amethyst Key");
                 AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenAmethystKey.set(__instance, true);
                 relics.add(HeartBlessingPurple.ID);
             }

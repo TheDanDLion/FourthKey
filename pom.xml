@@ -5,11 +5,7 @@
 
     <groupId>fourthkey</groupId>
     <artifactId>FourthKey</artifactId>
-<<<<<<< HEAD
-    <version>1.2.0</version>
-=======
-    <version>1.3.1</version>
->>>>>>> 0664257 (added compatibility for pale of the ancients)
+    <version>1.3.2</version>
     <packaging>jar</packaging>
     <name>FourthKey</name>
     <description>Adds a fourth key to the game to increase the difficulty of Act 4</description>

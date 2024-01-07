@@ -18,7 +18,7 @@ public class PurpleKeyPatch {
     )
     public static class AddPurpleKeyCommandPatch {
         public static void Postfix(String[] tokens, int depth) {
-            if(tokens[depth].equals("all") || tokens[depth].equals("purple"))
+            if(tokens[depth].equals("all") || tokens[depth].equals("amethyst"))
                 AbstractDungeon.topLevelEffects.add(new ObtainKeyEffect(ObtainKeyEffectPatch.PURPLE));
         }
     }
@@ -33,7 +33,7 @@ public class PurpleKeyPatch {
             localvars = {"tmp"}
         )
         public static void Insert(ArrayList<String> tmp) {
-            tmp.add("purple");
+            tmp.add("amethyst");
         }
     }
 
@@ -43,7 +43,7 @@ public class PurpleKeyPatch {
     )
     public static class LosePurpleKeyCommandPatch {
         public static void Postfix(String[] tokens, int depth) {
-            if(tokens[depth].equals("all") || tokens[depth].equals("purple"))
+            if(tokens[depth].equals("all") || tokens[depth].equals("amethyst"))
                 AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.set(AbstractDungeon.player, false);
         }
     }
@@ -58,7 +58,7 @@ public class PurpleKeyPatch {
             localvars = {"tmp"}
         )
         public static void Insert(ArrayList<String> tmp) {
-            tmp.add("purple");
+            tmp.add("amethyst");
         }
     }
 }

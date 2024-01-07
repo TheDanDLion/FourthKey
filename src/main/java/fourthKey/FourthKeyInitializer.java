@@ -49,7 +49,7 @@ import fourthKey.util.IDCheckDontTouchPls;
 import fourthKey.util.TextureLoader;
 
 @SpireInitializer
-public class ModInitializer implements
+public class FourthKeyInitializer implements
     EditStringsSubscriber,
     EditRelicsSubscriber,
     PostDeathSubscriber,
@@ -57,7 +57,7 @@ public class ModInitializer implements
     PostInitializeSubscriber,
     StartActSubscriber {
 
-    public static final Logger logger = LogManager.getLogger(ModInitializer.class.getName());
+    public static final Logger logger = LogManager.getLogger(FourthKeyInitializer.class.getName());
     private static String modID;
 
     // Mod-settings settings. This is if you want an on/off savable button
@@ -101,7 +101,7 @@ public class ModInitializer implements
 
     // =============== SUBSCRIBE, INITIALIZE =================
 
-    public ModInitializer(){
+    public FourthKeyInitializer(){
         logger.info("Subscribe to base mod hooks");
 
         BaseMod.subscribe(this);
@@ -131,7 +131,7 @@ public class ModInitializer implements
     public static void setModID(String ID) { // DON'T EDIT
         Gson coolG = new Gson(); // EY DON'T EDIT THIS
         //   String IDjson = Gdx.files.internal("IDCheckStringsDONT-EDIT-AT-ALL.json").readString(String.valueOf(StandardCharsets.UTF_8)); // i hate u Gdx.files
-        InputStream in = ModInitializer.class.getResourceAsStream("/IDCheckStringsDONT-EDIT-AT-ALL.json"); // DON'T EDIT THIS ETHER
+        InputStream in = FourthKeyInitializer.class.getResourceAsStream("/IDCheckStringsDONT-EDIT-AT-ALL.json"); // DON'T EDIT THIS ETHER
         IDCheckDontTouchPls EXCEPTION_STRINGS = coolG.fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), IDCheckDontTouchPls.class); // OR THIS, DON'T EDIT IT
         logger.info("You are attempting to set your mod ID as: " + ID); // NO WHY
         if (ID.equals(EXCEPTION_STRINGS.DEFAULTID)) { // DO *NOT* CHANGE THIS ESPECIALLY, TO EDIT YOUR MOD ID, SCROLL UP JUST A LITTLE, IT'S JUST ABOVE
@@ -151,9 +151,9 @@ public class ModInitializer implements
     private static void pathCheck() { // ALSO NO
         Gson coolG = new Gson(); // NOPE DON'T EDIT THIS
         //   String IDjson = Gdx.files.internal("IDCheckStringsDONT-EDIT-AT-ALL.json").readString(String.valueOf(StandardCharsets.UTF_8)); // i still hate u btw Gdx.files
-        InputStream in = ModInitializer.class.getResourceAsStream("/IDCheckStringsDONT-EDIT-AT-ALL.json"); // DON'T EDIT THISSSSS
+        InputStream in = FourthKeyInitializer.class.getResourceAsStream("/IDCheckStringsDONT-EDIT-AT-ALL.json"); // DON'T EDIT THISSSSS
         IDCheckDontTouchPls EXCEPTION_STRINGS = coolG.fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), IDCheckDontTouchPls.class); // NAH, NO EDIT
-        String packageName = ModInitializer.class.getPackage().getName(); // STILL NO EDIT ZONE
+        String packageName = FourthKeyInitializer.class.getPackage().getName(); // STILL NO EDIT ZONE
         FileHandle resourcePathExists = Gdx.files.internal(getModID() + "Resources"); // PLEASE DON'T EDIT THINGS HERE, THANKS
         if (!modID.equals(EXCEPTION_STRINGS.DEVID)) { // LEAVE THIS EDIT-LESS
             if (!packageName.equals(getModID())) { // NOT HERE ETHER
@@ -171,7 +171,7 @@ public class ModInitializer implements
     public static void initialize(){
         logger.info("========================= Initializing Fourth Key Mod. =========================");
         //This creates an instance of our classes and gets our code going after BaseMod and ModTheSpire initialize.
-        new ModInitializer();
+        new FourthKeyInitializer();
         setModID("fourthKey");
         logger.info("========================= /Fourth Key Mod Initialized./ =========================");
     }
@@ -312,7 +312,7 @@ public class ModInitializer implements
                         JsonElement brokenGreenKey = json.getAsJsonObject().get("brokenGreenKey");
                         AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenEmeraldKey.set(AbstractDungeon.player, brokenGreenKey == null ? false : brokenGreenKey.getAsBoolean());
                         JsonElement evilMode = json.getAsJsonObject().get("evilMode");
-                        ModInitializer.downfallEvilMode = !Loader.isModLoaded("downfall") || evilMode == null ? false : evilMode.getAsBoolean();
+                        FourthKeyInitializer.downfallEvilMode = !Loader.isModLoaded("downfall") || evilMode == null ? false : evilMode.getAsBoolean();
                     }
                 }
             }
@@ -332,7 +332,7 @@ public class ModInitializer implements
                     + "\", \"brokenGreenKey\":\""
                     + (AbstractDungeon.player != null ? AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenEmeraldKey.get(AbstractDungeon.player) : false)
                     + "\", \"evilMode\":\""
-                    + ModInitializer.downfallEvilMode
+                    + FourthKeyInitializer.downfallEvilMode
                     + "\"}"
                 );
             }
@@ -377,7 +377,7 @@ public class ModInitializer implements
     // ================ POST DUNGEON INIT ===================
     @Override
     public void receivePostDungeonInitialize() {
-        if (!ModInitializer.disableAmethystKey && ModInitializer.startWithAmethystKey) {
+        if (!FourthKeyInitializer.disableAmethystKey && FourthKeyInitializer.startWithAmethystKey) {
             logger.info("Starting with Amethyst Key");
             AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.set(AbstractDungeon.player, true);
         }
@@ -388,7 +388,7 @@ public class ModInitializer implements
     // ================ POST DEATH ===================
     @Override
     public void receivePostDeath() {
-        ModInitializer.downfallEvilMode = false;
+        FourthKeyInitializer.downfallEvilMode = false;
     }
     // ================ / POST DEATH/ ===================
 
@@ -400,6 +400,6 @@ public class ModInitializer implements
 
     @Override
     public void receiveStartAct() {
-        logger.info(ModInitializer.downfallEvilMode);
+        logger.info(FourthKeyInitializer.downfallEvilMode);
     }
 }

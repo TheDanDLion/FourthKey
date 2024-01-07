@@ -18,11 +18,11 @@ import com.megacrit.cardcrawl.localization.UIStrings;
 import com.megacrit.cardcrawl.shop.ShopScreen;
 import com.megacrit.cardcrawl.vfx.ObtainKeyEffect;
 
-import fourthKey.ModInitializer;
+import fourthKey.FourthKeyInitializer;
 import fourthKey.patches.characters.AbstractPlayerPatch;
 import fourthKey.patches.vfx.ObtainKeyEffectPatch;
 
-import static fourthKey.ModInitializer.makeID;
+import static fourthKey.FourthKeyInitializer.makeID;
 
 public class ShopScreenPatch {
 
@@ -50,7 +50,7 @@ public class ShopScreenPatch {
         int cost = (int)(KEY_COST
             * (AbstractDungeon.player.hasRelic("The Courier") ? 0.8 : 1.0)
             * (AbstractDungeon.player.hasRelic("Membership Card") ? 0.5 : 1.0));
-        if (!ModInitializer.disableAmethystKey) {
+        if (!FourthKeyInitializer.disableAmethystKey) {
             keyHitbox.update();
             if (keyHitbox.hovered) {
                 if (!AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player)) {
@@ -92,7 +92,7 @@ public class ShopScreenPatch {
             loc = 1394
         )
         public static void Insert(SpriteBatch sb) {
-            if (!ModInitializer.disableAmethystKey && !AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player)) {
+            if (!FourthKeyInitializer.disableAmethystKey && !AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player)) {
                 sb.draw(amethystKey, KEY_X, KEY_Y, 64.0F, 64.0F, 128.0F, 128.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 128, 128, false, false);
                 sb.setColor(Color.WHITE);
                 sb.draw(ImageMaster.UI_GOLD, KEY_X + KEY_GOLD_X_OFFSET, KEY_Y + KEY_GOLD_Y_OFFSET, GOLD_IMG_WIDTH, GOLD_IMG_WIDTH);
@@ -124,7 +124,7 @@ public class ShopScreenPatch {
             int cost = (int)(KEY_COST
                 * (AbstractDungeon.player.hasRelic("The Courier") ? 0.8 : 1.0)
                 * (AbstractDungeon.player.hasRelic("Membership Card") ? 0.5 : 1.0));
-            if (!ModInitializer.disableAmethystKey && keyHitbox.hovered && AbstractDungeon.player.gold >= cost && !AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player)) {
+            if (!FourthKeyInitializer.disableAmethystKey && keyHitbox.hovered && AbstractDungeon.player.gold >= cost && !AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player)) {
                 purchasePurpleKey(cost);
             }
         }

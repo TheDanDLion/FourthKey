@@ -12,7 +12,7 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.vfx.ObtainKeyEffect;
 import com.megacrit.cardcrawl.vfx.ObtainKeyEffect.KeyColor;
 
-import fourthKey.ModInitializer;
+import fourthKey.FourthKeyInitializer;
 import fourthKey.patches.characters.AbstractPlayerPatch;
 
 public class ObtainKeyEffectPatch {
@@ -31,7 +31,7 @@ public class ObtainKeyEffectPatch {
     )
     public static class ObtainPurpleKeyEffectPatch {
         public static void Postfix(@ByRef Texture[] ___img, KeyColor keyColor) {
-            if (!ModInitializer.disableAmethystKey) {
+            if (!FourthKeyInitializer.disableAmethystKey) {
                 switch (keyColor) {
                     case GREEN:
                         ___img[0] = emeraldKey;
@@ -60,7 +60,7 @@ public class ObtainKeyEffectPatch {
             loc = 57
         )
         public static SpireReturn<Void> Insert(@ByRef Texture[] ___img, KeyColor ___keyColor) {
-            if (!ModInitializer.disableAmethystKey) {
+            if (!FourthKeyInitializer.disableAmethystKey) {
                 switch (___keyColor) {
                     case GREEN:
                         ___img[0] = emeraldKey;

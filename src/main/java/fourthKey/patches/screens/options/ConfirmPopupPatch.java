@@ -3,7 +3,7 @@ package fourthKey.patches.screens.options;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch2;
 import com.megacrit.cardcrawl.screens.options.ConfirmPopup;
 
-import fourthKey.ModInitializer;
+import fourthKey.FourthKeyInitializer;
 
 @SpirePatch2(
     clz = ConfirmPopup.class,
@@ -16,7 +16,7 @@ public class ConfirmPopupPatch {
             case ABANDON_MAIN_MENU:
             case ABANDON_MID_RUN:
             case DELETE_SAVE:
-                ModInitializer.downfallEvilMode = false;
+                FourthKeyInitializer.downfallEvilMode = false;
                 break;
             case EXIT:
                 break;

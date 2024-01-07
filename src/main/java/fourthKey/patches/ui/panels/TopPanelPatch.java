@@ -11,7 +11,7 @@ import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.ui.panels.TopPanel;
 
-import fourthKey.ModInitializer;
+import fourthKey.FourthKeyInitializer;
 import fourthKey.patches.characters.AbstractPlayerPatch;
 
 public class TopPanelPatch {
@@ -38,10 +38,10 @@ public class TopPanelPatch {
             loc = 1320
         )
         public static SpireReturn<Void> Insert(SpriteBatch sb, float ___ICON_Y, String ___name, String ___title, float ___nameX, float ___NAME_Y, float ___titleX, float ___titleY) {
-            if (!ModInitializer.disableAmethystKey) {
+            if (!FourthKeyInitializer.disableAmethystKey) {
                 sb.draw(keySlots, -32.0F + 46.0F * Settings.scale, ___ICON_Y - 32.0F + 29.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);
 
-                boolean evilMode = ModInitializer.downfallEvilMode;
+                boolean evilMode = FourthKeyInitializer.downfallEvilMode;
 
                 if (evilMode && AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenRubyKey.get(AbstractDungeon.player))
                     sb.draw(brokenRubyKey, -32.0F + 46.0F * Settings.scale, ___ICON_Y - 32.0F + 29.0F * Settings.scale, 32.0F, 32.0F, 64.0F, 64.0F, Settings.scale, Settings.scale, 0.0F, 0, 0, 64, 64, false, false);

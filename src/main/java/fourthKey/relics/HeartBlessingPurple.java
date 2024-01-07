@@ -10,8 +10,8 @@ import com.megacrit.cardcrawl.actions.common.GainEnergyAction;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
 
-import static fourthKey.ModInitializer.makeID;
-import static fourthKey.ModInitializer.makeRelicPath;
+import static fourthKey.FourthKeyInitializer.makeID;
+import static fourthKey.FourthKeyInitializer.makeRelicPath;
 
 public class HeartBlessingPurple extends CustomRelic {
 

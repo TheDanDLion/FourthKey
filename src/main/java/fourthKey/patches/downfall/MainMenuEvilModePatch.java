@@ -5,12 +5,12 @@ import javassist.CannotCompileException;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
 
-import fourthKey.ModInitializer;
+import fourthKey.FourthKeyInitializer;
 
 public class MainMenuEvilModePatch {
 
     public static boolean captureValue(boolean value) {
-        return ModInitializer.downfallEvilMode = value;
+        return FourthKeyInitializer.downfallEvilMode = value;
     }
 
     @SpirePatch2(

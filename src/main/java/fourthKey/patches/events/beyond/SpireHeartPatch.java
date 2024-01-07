@@ -6,7 +6,7 @@ import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.events.beyond.SpireHeart;
 
-import fourthKey.ModInitializer;
+import fourthKey.FourthKeyInitializer;
 import fourthKey.patches.characters.AbstractPlayerPatch;
 
 public class SpireHeartPatch {
@@ -22,9 +22,9 @@ public class SpireHeartPatch {
             loc = 184
         )
         public static void Insert() {
-            if (!ModInitializer.disableAmethystKey && Settings.hasRubyKey
+            if (!FourthKeyInitializer.disableAmethystKey && Settings.hasRubyKey
                 && (!AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player)
-                    || (ModInitializer.downfallEvilMode && !AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenAmethystKey.get(AbstractDungeon.player)))) {
+                    || (FourthKeyInitializer.downfallEvilMode && !AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenAmethystKey.get(AbstractDungeon.player)))) {
                 // setting one of the keys to false to force going down the other route
                 Settings.hasRubyKey = false;
                 resetKey = true;
@@ -41,7 +41,7 @@ public class SpireHeartPatch {
             loc = 211
         )
         public static void Insert() {
-            if (!ModInitializer.disableAmethystKey && resetKey) {
+            if (!FourthKeyInitializer.disableAmethystKey && resetKey) {
                 resetKey = false;
                 Settings.hasRubyKey = true;
             }

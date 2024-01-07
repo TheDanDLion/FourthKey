@@ -16,7 +16,7 @@ import javassist.CannotCompileException;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
-import fourthKey.ModInitializer;
+import fourthKey.FourthKeyInitializer;
 
 public class NeowBossFinalPatch {
     @SpirePatch2(
@@ -28,7 +28,7 @@ public class NeowBossFinalPatch {
         public static ExprEditor Instrument() {
             return new ExprEditor() {
                 public void edit(MethodCall m) throws CannotCompileException {
-                    if (!ModInitializer.disableAct4Difficulty && m.getClassName().equals(AbstractMonster.class.getName())
+                    if (!FourthKeyInitializer.disableAct4Difficulty && m.getClassName().equals(AbstractMonster.class.getName())
                         && m.getMethodName().equals("setHp")) {
                         m.replace("{$proceed($1+100);}");
                     }
@@ -48,7 +48,7 @@ public class NeowBossFinalPatch {
             localvars = {"beatAmount", "invincibleAmt"}
         )
         public static void Insert(@ByRef int[] beatAmount, @ByRef int[] invincibleAmt) {
-            if (!ModInitializer.disableAct4Difficulty) {
+            if (!FourthKeyInitializer.disableAct4Difficulty) {
                 beatAmount[0]++;
                 invincibleAmt[0] -= 50;
                 switch(AbstractDungeon.mapRng.random(0, 3)) {
