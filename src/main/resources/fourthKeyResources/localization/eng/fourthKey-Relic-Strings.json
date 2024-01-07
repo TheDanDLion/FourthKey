@@ -3,5 +3,10 @@
         "NAME": "Amethyst Heart Blessing",
         "FLAVOR": "The heart is eternal.",
         "DESCRIPTIONS": ["Start Boss combats with 1 [E] or by drawing 1 card."]
+    },
+    "fourthKey:KeyRelic": {
+        "NAME": "",
+        "FLAVOR": "",
+        "DESCRIPTIONS": ["Gain between 5-10 #yGold at the start of each combat. Gain 1 #yMantra every turn"]
     }
 }

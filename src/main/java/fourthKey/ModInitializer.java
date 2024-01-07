@@ -40,6 +40,7 @@ import org.apache.logging.log4j.Logger;
 
 import fourthKey.events.Sacrifice;
 import fourthKey.patches.characters.AbstractPlayerPatch;
+import fourthKey.patches.paleoftheancients.KeyRelicPatch;
 import fourthKey.patches.shop.ShopScreenPatch;
 import fourthKey.patches.ui.panels.TopPanelPatch;
 import fourthKey.patches.vfx.ObtainKeyEffectPatch;
@@ -286,6 +287,9 @@ public class ModInitializer implements
         TopPanelPatch.brokenSapphireKey = TextureLoader.getTexture(makeUIPath("topPanel/brokenBlueKey.png"));
         TopPanelPatch.brokenEmeraldKey = TextureLoader.getTexture(makeUIPath("topPanel/brokenGreenKey.png"));
         TopPanelPatch.brokenAmethystKey = TextureLoader.getTexture(makeUIPath("topPanel/brokenPurpleKey.png"));
+
+        // vvv Pale of the Ancients vvv
+        KeyRelicPatch.keySlotsOutline = TextureLoader.getTexture(makeUIPath("topPanel/keySlotsOutline.png"));
         // =============== /TEXTURES/ =================
 
         // =============== SAVE FIELDS =================
