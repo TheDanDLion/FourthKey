@@ -3,9 +3,8 @@
   "name": "Fourth Key",
   "author_list": ["dandylion1740"],
   "description": "Adds a fourth key and a revamped final act with increased difficulty. Compatible with Downfall. To ensure compatibility with Downfall, load Fourth Key after Downfall.",
-  "version": "1.3.2",
+  "version": "1.3.4",
   "dependencies": ["basemod", "stslib"],
   "sts_version": "12-18-2022",
-  "mts_version": "3.30.3",
-  "dependencies": ["basemod", "stslib"]
+  "mts_version": "3.30.3"
 }
