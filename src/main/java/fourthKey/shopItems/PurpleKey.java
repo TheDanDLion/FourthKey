@@ -9,9 +9,11 @@ import com.megacrit.cardcrawl.vfx.ObtainKeyEffect;
 
 import fourthKey.patches.vfx.ObtainKeyEffectPatch;
 
-import static fourthKey.ModInitializer.makeID;
+import static fourthKey.FourthKeyInitializer.makeID;
 
 public class PurpleKey extends CustomShopItem {
+
+    public static final String SHOP_ID = makeID("AmethystKey");
 
     private static final UIStrings uiStrings = CardCrawlGame.languagePack.getUIString(makeID("PurpleKey"));
 
@@ -19,7 +21,7 @@ public class PurpleKey extends CustomShopItem {
     private static final int KEY_COST = 49;
 
     public PurpleKey() {
-        super(AbstractDungeon.shopScreen, amethystKey, KEY_COST, uiStrings.TEXT[0], uiStrings.TEXT[1]);
+        super(SHOP_ID, amethystKey, KEY_COST, uiStrings.TEXT[0], uiStrings.TEXT[1]);
     }
 
     @Override

@@ -3,8 +3,8 @@ package fourthKey;
 import basemod.BaseMod;
 import basemod.ModLabeledToggleButton;
 import basemod.ModPanel;
+import basemod.ShopGrid;
 import basemod.abstracts.CustomSavableRaw;
-import basemod.abstracts.CustomShopItem;
 import basemod.eventUtil.AddEventParams;
 import basemod.eventUtil.EventUtils;
 import basemod.eventUtil.util.Condition;
@@ -16,7 +16,6 @@ import basemod.interfaces.PostDungeonInitializeSubscriber;
 import basemod.interfaces.PostInitializeSubscriber;
 import basemod.interfaces.PostShopInitializeSubscriber;
 import basemod.interfaces.StartActSubscriber;
-import basemod.patches.com.megacrit.cardcrawl.shop.ShopScreen.ShopItemGrid;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -33,9 +32,6 @@ import com.megacrit.cardcrawl.helpers.FontHelper;
 import com.megacrit.cardcrawl.localization.EventStrings;
 import com.megacrit.cardcrawl.localization.RelicStrings;
 import com.megacrit.cardcrawl.localization.UIStrings;
-import com.megacrit.cardcrawl.shop.StorePotion;
-import com.megacrit.cardcrawl.shop.StoreRelic;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -46,7 +42,6 @@ import org.apache.logging.log4j.Logger;
 import fourthKey.events.Sacrifice;
 import fourthKey.patches.characters.AbstractPlayerPatch;
 import fourthKey.patches.paleoftheancients.KeyRelicPatch;
-import fourthKey.patches.shop.ShopScreenPatch;
 import fourthKey.patches.ui.panels.TopPanelPatch;
 import fourthKey.patches.vfx.ObtainKeyEffectPatch;
 import fourthKey.relics.HeartBlessingPurple;
@@ -403,11 +398,7 @@ public class FourthKeyInitializer implements
     public void receivePostShopInitialize() {
         if (!disableAmethystKey && !AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player)) {
             logger.info("Adding Amethyst Key to shop");
-            ShopItemGrid.addItem(new PurpleKey());
-        }
-        ShopItemGrid.addItem(new CustomShopItem(new StorePotion(AbstractDungeon.returnRandomPotion(), ShopItemGrid.getNextSlot(), AbstractDungeon.shopScreen)));
-        for (int i = 0; i < 12; i++) {
-            ShopItemGrid.addItem(new CustomShopItem(new StoreRelic(AbstractDungeon.returnRandomRelic(AbstractDungeon.returnRandomRelicTier()), ShopItemGrid.getNextSlot(), AbstractDungeon.shopScreen)));
+            ShopGrid.tryAddItem(new PurpleKey());
         }
     }
     // ================ / POST SHOP INITIALIZE/ ===================
