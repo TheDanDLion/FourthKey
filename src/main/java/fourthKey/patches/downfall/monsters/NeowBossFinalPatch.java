@@ -1,9 +1,13 @@
     package fourthKey.patches.downfall.monsters;
 
 import com.evacipated.cardcrawl.modthespire.lib.ByRef;
+import com.evacipated.cardcrawl.modthespire.lib.LineFinder;
+import com.evacipated.cardcrawl.modthespire.lib.Matcher;
+import com.evacipated.cardcrawl.modthespire.lib.SpireInsertLocator;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch2;
+import com.megacrit.cardcrawl.actions.GameActionManager;
 import com.megacrit.cardcrawl.actions.common.ApplyPowerAction;
 import com.megacrit.cardcrawl.actions.unique.IncreaseMaxHpAction;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
@@ -13,6 +17,7 @@ import com.megacrit.cardcrawl.powers.RegenerateMonsterPower;
 import com.megacrit.cardcrawl.powers.StrengthPower;
 
 import javassist.CannotCompileException;
+import javassist.CtBehavior;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
@@ -44,7 +49,7 @@ public class NeowBossFinalPatch {
     )
     public static class IncreaseDifficultyPatch {
         @SpireInsertPatch(
-            loc = 145,
+            locator = Locator.class,
             localvars = {"beatAmount", "invincibleAmt"}
         )
         public static void Insert(@ByRef int[] beatAmount, @ByRef int[] invincibleAmt) {
@@ -69,6 +74,13 @@ public class NeowBossFinalPatch {
                             AbstractDungeon.actionManager.addToBottom(new IncreaseMaxHpAction(m, 0.11F, true));
 
                 }
+            }
+        }
+
+        private static class Locator extends SpireInsertLocator {
+            @Override
+            public int[] Locate(CtBehavior ct) throws Exception {
+                return LineFinder.findInOrder(ct, new Matcher.MethodCallMatcher(GameActionManager.class, "addToBottom"));
             }
         }
     }
