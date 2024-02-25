@@ -45,8 +45,10 @@ public class KeyRelicPatch {
     public static class SetFourthKeyImagesPatch {
         public static void Postfix(CustomRelic __instance) {
             if (!FourthKeyInitializer.disableAmethystKey) {
-                __instance.img = TopPanelPatch.keySlots;
-                __instance.outlineImg = keySlotsOutline;
+                if (TopPanelPatch.keySlots != null)
+                    __instance.img = TopPanelPatch.keySlots;
+                if (keySlotsOutline != null)
+                    __instance.outlineImg = keySlotsOutline;
             }
         }
     }
