@@ -19,6 +19,7 @@ import com.megacrit.cardcrawl.rewards.RewardItem.RewardType;
 import com.megacrit.cardcrawl.vfx.ObtainKeyEffect;
 
 import basemod.ReflectionHacks;
+import fourthKey.FourthKeyInitializer;
 import fourthKey.patches.vfx.ObtainKeyEffectPatch;
 import fourthKey.util.TextureLoader;
 import javassist.CtBehavior;
@@ -51,6 +52,7 @@ public class RewardItemPatch {
         public static SpireReturn<Boolean> Prefix(RewardItem __instance) {
             if (__instance.type.equals(AMETHYST_KEY)) {
                 AbstractDungeon.topLevelEffects.add(new ObtainKeyEffect(ObtainKeyEffectPatch.PURPLE));
+                FourthKeyInitializer.saveKeyOverride = true;
                 return SpireReturn.Return(true);
             }
             return SpireReturn.Continue();
