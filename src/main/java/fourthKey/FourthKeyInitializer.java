@@ -76,10 +76,13 @@ public class FourthKeyInitializer implements
     // Downfall Compatability settings
     public static boolean downfallEvilMode = false;
 
-    //This is for the in-game mod settings panel.
+    // This is for the in-game mod settings panel.
     private static final String MODNAME = "Fourth Key";
     private static final String AUTHOR = "dandylion1740";
     private static final String DESCRIPTION = "Adds a fourth key and increased difficulty for Act 4.";
+
+    // This is in case you need to force saving the purple key
+    public static boolean saveKeyOverride = false;
 
     // =============== INPUT TEXTURE LOCATION =================
 
@@ -324,9 +327,11 @@ public class FourthKeyInitializer implements
             @Override
             public JsonElement onSaveRaw() {
                 JsonParser parser = new JsonParser();
+                boolean useOverride = saveKeyOverride;
+                saveKeyOverride = false;
                 return parser.parse(
                     "{\"purpleKey\":\""
-                    + (AbstractDungeon.player != null ? AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player) : false)
+                    + (useOverride || (AbstractDungeon.player != null ? AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player) : false))
                     + "\", \"brokenPurpleKey\":\""
                     + (AbstractDungeon.player != null ? AbstractPlayerPatch.DownfallCompatabilityPatch.hasBrokenAmethystKey.get(AbstractDungeon.player) : false)
                     + "\", \"brokenRedKey\":\""

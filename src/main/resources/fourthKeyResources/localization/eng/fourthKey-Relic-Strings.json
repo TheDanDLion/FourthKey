@@ -8,5 +8,10 @@
         "NAME": "",
         "FLAVOR": "",
         "DESCRIPTIONS": ["Gain between 5-10 #yGold at the start of each combat. Gain 1 #yMantra every turn."]
+    },
+    "fourthKey:Padlock": {
+        "NAME": "",
+        "FLAVOR": "",
+        "DESCRIPTIONS": [" Gain #b3 #yRegen if you have the Amethyst key."]
     }
 }

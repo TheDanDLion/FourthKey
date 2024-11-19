@@ -2,7 +2,6 @@ package fourthKey.patches.basemod;
 
 import basemod.devcommands.key.KeyAdd;
 import basemod.devcommands.key.KeyLose;
-import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch2;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.vfx.ObtainKeyEffect;
@@ -28,12 +27,9 @@ public class PurpleKeyPatch {
         method = "extraOptions"
     )
     public static class AddPurpleKeyOptionPatch {
-        @SpireInsertPatch(
-            loc = 61,
-            localvars = {"tmp"}
-        )
-        public static void Insert(ArrayList<String> tmp) {
-            tmp.add("amethyst");
+        public static ArrayList<String> Postfix(ArrayList<String> __result) {
+            __result.add(3, "amethyst");
+            return __result;
         }
     }
 
@@ -53,12 +49,9 @@ public class PurpleKeyPatch {
         method = "extraOptions"
     )
     public static class LosePurpleKeyOptionPatch {
-        @SpireInsertPatch(
-            loc = 46,
-            localvars = {"tmp"}
-        )
-        public static void Insert(ArrayList<String> tmp) {
-            tmp.add("amethyst");
+        public static ArrayList<String> Postfix(ArrayList<String> __result) {
+            __result.add(3, "amethyst");
+            return __result;
         }
     }
 }

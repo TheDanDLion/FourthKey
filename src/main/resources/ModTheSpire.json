@@ -2,7 +2,7 @@
   "modid": "fourthKey",
   "name": "Fourth Key",
   "author_list": ["dandylion1740"],
-  "description": "Adds a fourth key and a revamped final act with increased difficulty. Compatible with Downfall. To ensure compatibility with Downfall, load Fourth Key after Downfall.",
+  "description": "Adds a fourth key and a harder final act with increased difficulty. Compatible with Downfall, Pale of the Ancients, and Bundle Mods. To ensure compatibility, put Fourth Key after them in the load order.",
   "version": "1.4.0",
   "dependencies": ["basemod", "stslib"],
   "sts_version": "12-18-2022",

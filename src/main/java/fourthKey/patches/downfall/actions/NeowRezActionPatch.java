@@ -1,7 +1,11 @@
 package fourthKey.patches.downfall.actions;
 
+import com.evacipated.cardcrawl.modthespire.lib.LineFinder;
+import com.evacipated.cardcrawl.modthespire.lib.Matcher;
+import com.evacipated.cardcrawl.modthespire.lib.SpireInsertLocator;
 import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch2;
+import com.megacrit.cardcrawl.actions.GameActionManager;
 import com.megacrit.cardcrawl.actions.common.ApplyPowerAction;
 import com.megacrit.cardcrawl.actions.unique.IncreaseMaxHpAction;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
@@ -11,6 +15,7 @@ import com.megacrit.cardcrawl.powers.RegenerateMonsterPower;
 import com.megacrit.cardcrawl.powers.StrengthPower;
 
 import fourthKey.FourthKeyInitializer;
+import javassist.CtBehavior;
 
 @SpirePatch2(
     cls = "downfall.actions.NeowRezAction",
@@ -19,7 +24,7 @@ import fourthKey.FourthKeyInitializer;
 )
 public class NeowRezActionPatch {
     @SpireInsertPatch(
-        loc = 91,
+        locator = Locator.class,
         localvars = {"q"}
     )
     public static void Insert(AbstractMonster q) {
@@ -38,6 +43,13 @@ public class NeowRezActionPatch {
                     AbstractDungeon.actionManager.addToBottom(new IncreaseMaxHpAction(q, 0.25F, true));
                     break;
             }
+        }
+    }
+
+    private static class Locator extends SpireInsertLocator {
+        @Override
+        public int[] Locate(CtBehavior ct) throws Exception {
+            return LineFinder.findInOrder(ct, new Matcher.MethodCallMatcher(GameActionManager.class, "addToTop"));
         }
     }
 }
