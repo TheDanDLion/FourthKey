@@ -3,7 +3,6 @@ package fourthKey;
 import basemod.BaseMod;
 import basemod.ModLabeledToggleButton;
 import basemod.ModPanel;
-import basemod.ShopGrid;
 import basemod.abstracts.CustomSavableRaw;
 import basemod.eventUtil.AddEventParams;
 import basemod.eventUtil.EventUtils;
@@ -14,7 +13,6 @@ import basemod.interfaces.EditStringsSubscriber;
 import basemod.interfaces.PostDeathSubscriber;
 import basemod.interfaces.PostDungeonInitializeSubscriber;
 import basemod.interfaces.PostInitializeSubscriber;
-import basemod.interfaces.PostShopInitializeSubscriber;
 import basemod.interfaces.StartActSubscriber;
 
 import com.badlogic.gdx.Gdx;
@@ -38,6 +36,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import shopgrid.ShopGridInitializer;
+import shopgrid.interfaces.PostShopInitializeSubscriber;
+import shopgrid.ui.ShopGrid;
 
 import fourthKey.events.Sacrifice;
 import fourthKey.patches.characters.AbstractPlayerPatch;
@@ -107,6 +109,7 @@ public class FourthKeyInitializer implements
         logger.info("Subscribe to base mod hooks");
 
         BaseMod.subscribe(this);
+        ShopGridInitializer.subscribe(this);
 
         logger.info("Done subscribing");
 

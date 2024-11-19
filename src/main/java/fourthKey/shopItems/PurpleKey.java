@@ -1,11 +1,11 @@
 package fourthKey.shopItems;
 
-import basemod.abstracts.CustomShopItem;
 import com.badlogic.gdx.graphics.Texture;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.localization.UIStrings;
 import com.megacrit.cardcrawl.vfx.ObtainKeyEffect;
+import shopgrid.abstracts.CustomShopItem;
 
 import fourthKey.patches.vfx.ObtainKeyEffectPatch;
 
