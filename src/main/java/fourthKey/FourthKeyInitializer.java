@@ -405,17 +405,18 @@ public class FourthKeyInitializer implements
     @Override
     public void receivePostShopInitialize() {
         // alwaysneverkeys has an option to disable the keys, so if it's enabled, return so we do not see the key
-        int keyMode = -1;
-        try {
-            SpireConfig config = new SpireConfig("alwaysNeverKeys", "alwaysNeverKeysConf", new Properties());
-            config.load();
-            keyMode = config.getInt("keyMode");
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (Loader.isModLoaded("alwaysneverkeys")) {
+            int keyMode = -1;
+            try {
+                SpireConfig config = new SpireConfig("alwaysNeverKeys", "alwaysNeverKeysConf", new Properties());
+                config.load();
+                keyMode = config.getInt("keyMode");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (keyMode == 2)
+                return;
         }
-
-        if (keyMode == 2)
-            return;
         // /alwaysneverkeys/
 
         if (!disableAmethystKey && !AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player)) {
