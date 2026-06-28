@@ -286,9 +286,9 @@ public class FourthKeyInitializer implements
         } else {
             ShopScreenPatch.amethystKey = TextureLoader.getTexture(makeUIPath("amethystKey.png"));
             ShopScreenPatch.keyHitbox = new com.megacrit.cardcrawl.helpers.Hitbox(
-                ShopScreenPatch.KEY_X, ShopScreenPatch.KEY_Y,
-                ShopScreenPatch.amethystKey.getWidth(), ShopScreenPatch.amethystKey.getHeight()
+                128.0F * Settings.scale, 128.0F * Settings.scale
             );
+            ShopScreenPatch.keyHitbox.move(ShopScreenPatch.KEY_X + 64.0F, ShopScreenPatch.KEY_Y + 64.0F);
         }
 
         TopPanelPatch.keySlots = TextureLoader.getTexture(makeUIPath("topPanel/keySlots.png"));

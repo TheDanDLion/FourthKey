@@ -1,11 +1,16 @@
 package fourthKey.patches.shop;
 
+import java.util.ArrayList;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.evacipated.cardcrawl.modthespire.Loader;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePostfixPatch;
+import com.evacipated.cardcrawl.modthespire.lib.SpirePrefixPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch2;
+import com.evacipated.cardcrawl.modthespire.lib.SpireReturn;
 import com.megacrit.cardcrawl.core.CardCrawlGame;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
@@ -17,7 +22,11 @@ import com.megacrit.cardcrawl.helpers.controller.CInputActionSet;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.localization.UIStrings;
 import com.megacrit.cardcrawl.shop.ShopScreen;
+import com.megacrit.cardcrawl.shop.StorePotion;
+import com.megacrit.cardcrawl.shop.StoreRelic;
 import com.megacrit.cardcrawl.vfx.ObtainKeyEffect;
+
+import basemod.ReflectionHacks;
 
 import fourthKey.FourthKeyInitializer;
 import fourthKey.patches.characters.AbstractPlayerPatch;
@@ -33,7 +42,7 @@ public class ShopScreenPatch {
     public static Hitbox keyHitbox;
     private static final int KEY_COST = 49;
     public static final float KEY_X = 0.43F * Settings.WIDTH;
-    public static final float KEY_Y = 190.0F;
+    public static final float KEY_Y = 190.0F * Settings.yScale;
     private static final float KEY_GOLD_X_OFFSET = -28.0F * Settings.scale;
     private static final float KEY_GOLD_Y_OFFSET = -33.0F * Settings.scale;
     private static final float KEY_PRICE_X_OFFSET = 42.0F * Settings.scale;
@@ -95,13 +104,80 @@ public class ShopScreenPatch {
                 * (AbstractDungeon.player.hasRelic("Membership Card") ? 0.5 : 1.0));
             keyHitbox.update();
             if (keyHitbox.hovered) {
-                __instance.moveHand(KEY_X - 175.0F, KEY_Y);
-                if ((InputHelper.justReleasedClickLeft || CInputActionSet.select.isJustPressed())
-                        && AbstractDungeon.player.gold >= cost) {
+                __instance.moveHand(KEY_X - 175.0F * Settings.xScale, KEY_Y);
+                if (InputHelper.justClickedLeft) {
+                    keyHitbox.clickStarted = true;
+                }
+                if (keyHitbox.clicked || CInputActionSet.select.isJustPressed()) {
+                    keyHitbox.clicked = false;
                     CInputActionSet.select.unpress();
-                    purchasePurpleKey(cost);
+                    if (AbstractDungeon.player.gold >= cost) {
+                        purchasePurpleKey(cost);
+                    } else {
+                        __instance.playCantBuySfx();
+                        __instance.createSpeech(ShopScreen.getCantBuyMsg());
+                    }
                 }
             }
+        }
+    }
+
+    // Integrates the key into the D-pad navigation state machine for controller players.
+    @SpirePatch2(clz = ShopScreen.class, method = "updateControllerInput")
+    public static class ControllerNavPatch {
+        @SpirePrefixPatch
+        public static SpireReturn<Void> Prefix(ShopScreen __instance) {
+            if (Loader.isModLoaded("shopgrid")) return SpireReturn.Continue();
+            if (!Settings.isControllerMode
+                    || AbstractDungeon.topPanel.selectPotionMode
+                    || !AbstractDungeon.topPanel.potionUi.isHidden
+                    || AbstractDungeon.player.viewingRelics) {
+                return SpireReturn.Continue();
+            }
+            if (FourthKeyInitializer.disableAmethystKey) return SpireReturn.Continue();
+            if (AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player)) return SpireReturn.Continue();
+
+            ArrayList<StoreRelic> relics = ReflectionHacks.getPrivate(__instance, ShopScreen.class, "relics");
+            ArrayList<StorePotion> potions = ReflectionHacks.getPrivate(__instance, ShopScreen.class, "potions");
+
+            if (keyHitbox.hovered) {
+                // Navigate away from the key with the D-pad.
+                if (CInputActionSet.right.isJustPressed() || CInputActionSet.altRight.isJustPressed()) {
+                    if (!relics.isEmpty()) {
+                        Gdx.input.setCursorPosition((int)relics.get(0).relic.hb.cX, Settings.HEIGHT - (int)relics.get(0).relic.hb.cY);
+                    } else if (!potions.isEmpty()) {
+                        Gdx.input.setCursorPosition((int)potions.get(0).potion.hb.cX, Settings.HEIGHT - (int)potions.get(0).potion.hb.cY);
+                    } else if (__instance.purgeAvailable) {
+                        float purgeX = ReflectionHacks.getPrivate(__instance, ShopScreen.class, "purgeCardX");
+                        float purgeY = ReflectionHacks.getPrivate(__instance, ShopScreen.class, "purgeCardY");
+                        Gdx.input.setCursorPosition((int)purgeX, Settings.HEIGHT - (int)purgeY);
+                    }
+                } else if (CInputActionSet.up.isJustPressed() || CInputActionSet.altUp.isJustPressed()) {
+                    if (!__instance.coloredCards.isEmpty()) {
+                        Gdx.input.setCursorPosition(
+                            (int)__instance.coloredCards.get(0).hb.cX,
+                            Settings.HEIGHT - (int)__instance.coloredCards.get(0).hb.cY
+                        );
+                    } else if (!__instance.colorlessCards.isEmpty()) {
+                        Gdx.input.setCursorPosition(
+                            (int)__instance.colorlessCards.get(0).hb.cX,
+                            Settings.HEIGHT - (int)__instance.colorlessCards.get(0).hb.cY
+                        );
+                    }
+                }
+                // Left/down from the key: no navigation (it is the leftmost item).
+                return SpireReturn.Return();
+            }
+
+            // Navigate TO the key: intercept left-from-first-relic before vanilla sends
+            // the cursor to the colorless cards.
+            if (!relics.isEmpty() && relics.get(0).relic.hb.hovered
+                    && (CInputActionSet.left.isJustPressed() || CInputActionSet.altLeft.isJustPressed())) {
+                Gdx.input.setCursorPosition((int)keyHitbox.cX, Settings.HEIGHT - (int)keyHitbox.cY);
+                return SpireReturn.Return();
+            }
+
+            return SpireReturn.Continue();
         }
     }
 }
