@@ -4,7 +4,8 @@
   "author_list": ["dandylion1740"],
   "description": "Adds a fourth key and a harder final act with increased difficulty. Compatible with Downfall, Pale of the Ancients, and Bundle Mods, and more. To ensure compatibility, put Fourth Key after them in the load order.",
   "version": "1.5.1",
-  "dependencies": ["basemod", "stslib", "shopgrid"],
+  "dependencies": ["basemod", "stslib"],
+  "optional_dependencies": ["shopgrid"],
   "sts_version": "12-18-2022",
   "mts_version": "3.30.3"
 }

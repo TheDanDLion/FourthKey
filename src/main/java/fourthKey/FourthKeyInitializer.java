@@ -37,13 +37,11 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import shopgrid.ShopGridInitializer;
-import shopgrid.interfaces.PostShopInitializeSubscriber;
-import shopgrid.ui.ShopGrid;
-
 import fourthKey.events.Sacrifice;
 import fourthKey.patches.characters.AbstractPlayerPatch;
 import fourthKey.patches.paleoftheancients.KeyRelicPatch;
+import fourthKey.patches.shop.ShopScreenPatch;
+import fourthKey.patches.shopgrid.ShopGridHelper;
 import fourthKey.patches.ui.panels.TopPanelPatch;
 import fourthKey.patches.vfx.ObtainKeyEffectPatch;
 import fourthKey.relics.HeartBlessingPurple;
@@ -58,7 +56,6 @@ public class FourthKeyInitializer implements
     PostDeathSubscriber,
     PostDungeonInitializeSubscriber,
     PostInitializeSubscriber,
-    PostShopInitializeSubscriber,
     StartActSubscriber {
 
     public static final Logger logger = LogManager.getLogger(FourthKeyInitializer.class.getName());
@@ -112,7 +109,9 @@ public class FourthKeyInitializer implements
         logger.info("Subscribe to base mod hooks");
 
         BaseMod.subscribe(this);
-        ShopGridInitializer.subscribe(this);
+        if (Loader.isModLoaded("shopgrid")) {
+            ShopGridHelper.subscribe();
+        }
 
         logger.info("Done subscribing");
 
@@ -282,7 +281,15 @@ public class FourthKeyInitializer implements
         ObtainKeyEffectPatch.rubyKey = TextureLoader.getTexture(makeUIPath("topPanel/redKey.png"));
         ObtainKeyEffectPatch.emeraldKey = TextureLoader.getTexture(makeUIPath("topPanel/greenKey.png"));
 
-        PurpleKey.amethystKey = TextureLoader.getTexture(makeUIPath("amethystKey.png"));
+        if (Loader.isModLoaded("shopgrid")) {
+            PurpleKey.amethystKey = TextureLoader.getTexture(makeUIPath("amethystKey.png"));
+        } else {
+            ShopScreenPatch.amethystKey = TextureLoader.getTexture(makeUIPath("amethystKey.png"));
+            ShopScreenPatch.keyHitbox = new com.megacrit.cardcrawl.helpers.Hitbox(
+                ShopScreenPatch.KEY_X, ShopScreenPatch.KEY_Y,
+                ShopScreenPatch.amethystKey.getWidth(), ShopScreenPatch.amethystKey.getHeight()
+            );
+        }
 
         TopPanelPatch.keySlots = TextureLoader.getTexture(makeUIPath("topPanel/keySlots.png"));
         TopPanelPatch.rubyKey = TextureLoader.getTexture(makeUIPath("topPanel/redKey.png"));
@@ -400,31 +407,6 @@ public class FourthKeyInitializer implements
         FourthKeyInitializer.downfallEvilMode = false;
     }
     // ================ / POST DEATH/ ===================
-
-    // ================ POST SHOP INITIALIZE ===================
-    @Override
-    public void receivePostShopInitialize() {
-        // alwaysneverkeys has an option to disable the keys, so if it's enabled, return so we do not see the key
-        if (Loader.isModLoaded("alwaysneverkeys")) {
-            int keyMode = -1;
-            try {
-                SpireConfig config = new SpireConfig("alwaysNeverKeys", "alwaysNeverKeysConf", new Properties());
-                config.load();
-                keyMode = config.getInt("keyMode");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (keyMode == 2)
-                return;
-        }
-        // /alwaysneverkeys/
-
-        if (!disableAmethystKey && !AbstractPlayerPatch.PurpleKeyPatch.hasAmethystKey.get(AbstractDungeon.player)) {
-            logger.info("Adding Amethyst Key to shop");
-            ShopGrid.tryAddItem(new PurpleKey());
-        }
-    }
-    // ================ / POST SHOP INITIALIZE/ ===================
 
     // this adds "ModName:" before the ID of any card/relic/power etc.
     // in order to avoid conflicts if any other mod uses the same ID.
